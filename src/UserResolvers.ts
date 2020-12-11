@@ -6,11 +6,15 @@ import {
   ObjectType,
   Field,
   Ctx,
+  UseMiddleware,
 } from "type-graphql";
 import { compare, hash } from "bcryptjs";
 import { User } from "./entity/User";
-import { sign } from "jsonwebtoken";
 import { MyContext } from "./types/MyContext";
+import { isAuth } from "./isAuth";
+import { createAccessToken, createRefreshToken } from "./auth";
+import { sendRefreshtoken } from "./sendRefreshToken";
+import { getConnection } from "typeorm";
 
 @ObjectType()
 class LoginResponse {
@@ -22,10 +26,10 @@ class LoginResponse {
 export class UserResolver {
   @Query(() => String)
   hello() {
-    return "hi boy";
+    return "hi there";
   }
 
-  //查找用户
+  //查找所有用户
   @Query(() => [User])
   users() {
     return User.find();
@@ -54,6 +58,18 @@ export class UserResolver {
     return true;
   }
 
+  //通过增加token版本，来撤销Refreshtoken
+  @Mutation(() => Boolean)
+  async revokeRefreshTokensForUser(
+    @Arg("userId", () => String) userId: string
+  ) {
+    await getConnection()
+      .getRepository(User)
+      .increment({ id: userId }, "tokenVersion", 1);
+
+    return true;
+  }
+
   //登录
   @Mutation(() => LoginResponse)
   async login(
@@ -77,16 +93,23 @@ export class UserResolver {
 
     //登录成功
 
-    res.cookie(
-      "bot",
-      sign({ userId: user.id }, `${process.env.COOKIE}`, { expiresIn: "7d" }),
-      { httpOnly: true }
-    );
+    sendRefreshtoken(res, createRefreshToken(user));
 
     return {
-      accessToken: sign({ userId: user.id }, `${process.env.TOKEN}`, {
-        expiresIn: "15m",
-      }),
+      accessToken: createAccessToken(user),
     };
+  }
+
+  //查看当前用户
+  @Query(() => User)
+  @UseMiddleware(isAuth)
+  async currentUser(@Ctx() { res, payload }: MyContext) {
+    const currentUser = await User.findOne({ id: payload!.userId });
+
+    if (!currentUser) {
+      throw new Error("验证错误");
+    }
+
+    return res.json(currentUser);
   }
 }
