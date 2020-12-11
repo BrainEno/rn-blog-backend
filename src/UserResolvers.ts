@@ -103,13 +103,13 @@ export class UserResolver {
   //查看当前用户
   @Query(() => User)
   @UseMiddleware(isAuth)
-  async currentUser(@Ctx() { res, payload }: MyContext) {
+  async currentUser(@Ctx() { payload }: MyContext) {
     const currentUser = await User.findOne({ id: payload!.userId });
 
     if (!currentUser) {
-      throw new Error("验证错误");
+      return "暂无用户";
+    } else {
+      return currentUser;
     }
-
-    return res.json(currentUser);
   }
 }
