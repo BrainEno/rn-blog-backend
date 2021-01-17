@@ -3,7 +3,7 @@ import "reflect-metadata";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { UserResolver } from "./UserResolvers";
+import { UserResolver } from "./resolvers/UserResolvers";
 import { createConnection } from "typeorm";
 import cors from "cors";
 import cookieParser from "cookie-parser";

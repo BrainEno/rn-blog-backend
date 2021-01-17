@@ -9,11 +9,11 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { compare, hash } from "bcryptjs";
-import { User } from "./entity/User";
-import { MyContext } from "./types/MyContext";
-import { isAuth } from "./isAuth";
-import { createAccessToken, createRefreshToken } from "./auth";
-import { sendRefreshtoken } from "./sendRefreshToken";
+import { User } from "../entity/User";
+import { MyContext } from "../types/MyContext";
+import { isAuth } from "../middleware/isAuth";
+import { createAccessToken, createRefreshToken } from "../auth";
+import { sendRefreshtoken } from "../sendRefreshToken";
 import { getConnection } from "typeorm";
 
 @ObjectType()
@@ -38,7 +38,7 @@ export class UserResolver {
   //注册
   @Mutation(() => Boolean)
   async register(
-    @Arg("name") name: string,
+    @Arg("username") username: string,
     @Arg("email") email: string,
     @Arg("password") password: string
   ) {
@@ -46,7 +46,7 @@ export class UserResolver {
 
     try {
       await User.insert({
-        name,
+        username,
         email,
         password: hashedPassword,
       });
@@ -61,7 +61,7 @@ export class UserResolver {
   //通过增加token版本，来撤销Refreshtoken
   @Mutation(() => Boolean)
   async revokeRefreshTokensForUser(
-    @Arg("userId", () => String) userId: string
+    @Arg("userId", () => Number) userId: number
   ) {
     await getConnection()
       .getRepository(User)
