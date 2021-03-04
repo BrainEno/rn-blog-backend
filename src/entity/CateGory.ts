@@ -1,7 +1,6 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 import {
   Entity as TOEntity,
-  PrimaryGeneratedColumn,
   Column,
   Index,
   ManyToOne,
@@ -15,9 +14,10 @@ import { User } from "./User";
 @ObjectType()
 @TOEntity("categories")
 export class Category extends Entity {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn("uuid")
-  identifier: string;
+  constructor(category: Partial<Category>) {
+    super();
+    Object.assign(this, category);
+  }
 
   @Field()
   @Index()
@@ -25,27 +25,23 @@ export class Category extends Entity {
   name: string;
 
   @Field()
-  @Column("text", { nullable: false })
-  title: string;
-
-  @Field()
   @Column("text", { nullable: true })
-  desc: string;
+  desc?: string;
 
   @Field()
-  @Column("bytea", { nullable: true })
-  banner?: Buffer;
+  @Column({ nullable: true })
+  bannerUrn: string;
 
   @Field()
-  @Column("bytea", { nullable: true })
-  image?: Buffer;
+  @Column("text", { nullable: false })
+  owner: string;
 
-  @Field()
+  @Field(() => User)
   @ManyToOne(() => User)
-  @JoinColumn({ name: "username", referencedColumnName: "username" })
+  @JoinColumn({ name: "owner", referencedColumnName: "username" })
   user: User;
 
   @Field(() => [Blog])
   @OneToMany(() => Blog, (blog) => blog.id)
-  blogs: Blog[];
+  blogs?: Blog[];
 }

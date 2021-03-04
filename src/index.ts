@@ -1,3 +1,4 @@
+import { CategoryResolver } from "./resolvers/CategoryResolvers";
 import dotenv from "dotenv";
 import "reflect-metadata";
 import express from "express";
@@ -15,9 +16,9 @@ import { sendRefreshtoken } from "./sendRefreshToken";
 (async () => {
   dotenv.config();
   const app = express();
+  const PORT = process.env.PORT;
   app.use(cookieParser());
   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
-
   app.get("/", (_req, res) => res.send("Hello world!"));
 
   //刷新token
@@ -57,14 +58,16 @@ import { sendRefreshtoken } from "./sendRefreshToken";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, CategoryResolver],
     }),
     context: ({ req, res }) => ({ req, res }),
+    introspection: true,
+    playground: true,
   });
 
   apolloServer.applyMiddleware({ app });
 
-  app.listen(4000, () => {
-    console.log("express server started on http://localhost:4000/graphql");
+  app.listen(PORT, () => {
+    console.log(`Server started on http://localhost:${PORT}/graphql`);
   });
 })();
