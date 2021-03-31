@@ -7,8 +7,8 @@ import {
   JoinColumn,
 } from "typeorm";
 import Entity from "./Entity";
-import { Blog } from "./Blog";
-import { User } from "./User";
+import Blog from "./Blog";
+import User from "./User";
 
 @ObjectType()
 @TOEntity("likes")

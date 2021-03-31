@@ -9,7 +9,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { compare, hash } from "bcryptjs";
-import { User } from "../entity/User";
+import User from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../middleware/isAuth";
 import { createAccessToken, createRefreshToken } from "../auth";

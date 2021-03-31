@@ -6,13 +6,13 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { User } from "./User";
-import { Blog } from "./Blog";
+import User from "./User";
+import Blog from "./Blog";
 import Entity from "./Entity";
 
 @ObjectType()
 @TOEntity("comments")
-export class Comment extends Entity {
+export default class Comment extends Entity {
   constructor(comment: Partial<Comment>) {
     super();
     Object.assign(this, comment);

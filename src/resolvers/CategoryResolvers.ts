@@ -10,8 +10,8 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { getRepository } from "typeorm";
-import { User } from "../entity/User";
-import { Category } from "./../entity/Category";
+import User from "../entity/User";
+import Category from "../entity/Category";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { createWriteStream } from "fs";
 import { File, UploadedFileResponse } from "../types/Upload";
@@ -91,8 +91,8 @@ export class CategoryResolver {
     const owner = await User.findOneOrFail({ id: payload!.userId });
     if (!owner) throw new AuthenticationError("认证失败");
     try {
-      const category = await Category.find({ where: { owner } });
-      return category;
+      const categories = await Category.find({ where: { owner } });
+      return categories;
     } catch (err) {
       console.log(err);
       return err;
@@ -111,7 +111,6 @@ export class CategoryResolver {
     if (!user) throw new AuthenticationError("认证失败");
 
     const stream = createReadStream();
-
     stream.pipe(createWriteStream(__dirname, `/../../../images/${filename}`));
 
     return {

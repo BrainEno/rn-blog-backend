@@ -7,14 +7,14 @@ import {
   Index,
   JoinColumn,
 } from "typeorm";
-import { Blog } from "./Blog";
+import Blog from "./Blog";
 import Entity from "./Entity";
 import Vote from "./Vote";
 import Like from "./Like";
 
 @ObjectType()
 @TOEntity("users")
-export class User extends Entity {
+export default class User extends Entity {
   constructor(user: Partial<User>) {
     super();
     Object.assign(this, user);

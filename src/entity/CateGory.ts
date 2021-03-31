@@ -8,12 +8,12 @@ import {
   OneToMany,
 } from "typeorm";
 import Entity from "./Entity";
-import { Blog } from "./Blog";
-import { User } from "./User";
+import Blog from "./Blog";
+import User from "./User";
 
 @ObjectType()
 @TOEntity("categories")
-export class Category extends Entity {
+export default class Category extends Entity {
   constructor(category: Partial<Category>) {
     super();
     Object.assign(this, category);

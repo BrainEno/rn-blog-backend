@@ -1,9 +1,9 @@
 import { Field, ObjectType } from "type-graphql";
 import { Entity as TOEntity, Column, ManyToOne, JoinColumn } from "typeorm";
-import { Comment } from "./Comment";
+import Comment from "./Comment";
 import Entity from "./Entity";
-import { Blog } from "./Blog";
-import { User } from "./User";
+import Blog from "./Blog";
+import User from "./User";
 
 @ObjectType()
 @TOEntity("votes")

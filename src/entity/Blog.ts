@@ -9,15 +9,15 @@ import {
   BeforeInsert,
 } from "typeorm";
 import Entity from "./Entity";
-import { User } from "./User";
-import { Comment } from "./Comment";
+import User from "./User";
+import Comment from "./Comment";
 import Vote from "./Vote";
 // import { Expose } from "class-transformer";
 import { slugify } from "../utils/helpers";
 
 @ObjectType()
 @TOEntity("blogs")
-export class Blog extends Entity {
+export default class Blog extends Entity {
   constructor(blog: Partial<Blog>) {
     super();
     Object.assign(this, blog);
