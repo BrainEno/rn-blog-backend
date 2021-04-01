@@ -7,13 +7,15 @@ import {
   JoinColumn,
   OneToMany,
   BeforeInsert,
+  ManyToMany,
 } from "typeorm";
 import Entity from "./Entity";
 import User from "./User";
 import Comment from "./Comment";
 import Vote from "./Vote";
-// import { Expose } from "class-transformer";
+import { Expose } from "class-transformer";
 import { slugify } from "../utils/helpers";
+import Tag from "./Tag";
 
 @ObjectType()
 @TOEntity("blogs")
@@ -52,6 +54,10 @@ export default class Blog extends Entity {
   @Column()
   categoryName: string;
 
+  @Field(() => [Tag])
+  @ManyToMany(() => Tag, (tag) => tag.name)
+  tags?: Tag[];
+
   @Field()
   @Column()
   author: string;
@@ -68,29 +74,29 @@ export default class Blog extends Entity {
   @OneToMany(() => Vote, (vote) => vote.blog)
   votes: Vote[];
 
-  // @Field()
-  // protected userVote: number;
-  // setUserVote(user: User) {
-  //   const index = this.votes?.findIndex(
-  //     (v): any => v.username === user.username
-  //   );
-  //   this.userVote = index > -1 ? this.votes[index].value : 0;
-  // }
+  @Field()
+  protected userVote: number;
+  setUserVote(user: User) {
+    const index = this.votes?.findIndex(
+      (v): any => v.username === user.username
+    );
+    this.userVote = index > -1 ? this.votes[index].value : 0;
+  }
 
-  // @Field()
-  // @Expose()
-  // get commentCount(): number {
-  //   return this.comments?.length;
-  // }
+  @Field()
+  @Expose()
+  get commentCount(): number {
+    return this.comments?.length;
+  }
 
-  // @Field()
-  // @Expose()
-  // get voteScore(): number {
-  //   return this.votes?.reduce(
-  //     (prev: any, curr: any) => prev + (curr.value || 0),
-  //     0
-  //   );
-  // }
+  @Field()
+  @Expose()
+  get voteScore(): number {
+    return this.votes?.reduce(
+      (prev: any, curr: any) => prev + (curr.value || 0),
+      0
+    );
+  }
 
   @BeforeInsert()
   makeSlug() {

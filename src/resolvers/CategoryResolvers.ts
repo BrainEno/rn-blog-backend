@@ -51,7 +51,7 @@ export class CategoryResolver {
 
     try {
       const category = new Category({ user, name, desc });
-      category.save();
+      await category.save();
       return category;
     } catch (err) {
       console.log(err);

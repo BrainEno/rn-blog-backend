@@ -19,24 +19,24 @@ export default class Category extends Entity {
     Object.assign(this, category);
   }
 
-  @Field()
+  @Field({ nullable: false })
   @Index()
   @Column("text", { unique: true })
   name: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column("text", { nullable: true })
   desc?: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
-  bannerUrn: string;
+  bannerUrn?: string;
 
-  @Field()
-  @Column("text", { nullable: false })
+  @Field({ nullable: false })
+  @Column("text", { name: "owner" })
   owner: string;
 
-  @Field(() => User)
+  // @Field(() => User)
   @ManyToOne(() => User)
   @JoinColumn({ name: "owner", referencedColumnName: "username" })
   user: User;
