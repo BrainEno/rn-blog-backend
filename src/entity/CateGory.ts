@@ -36,7 +36,6 @@ export default class Category extends Entity {
   @Column("text", { name: "owner" })
   owner: string;
 
-  // @Field(() => User)
   @ManyToOne(() => User)
   @JoinColumn({ name: "owner", referencedColumnName: "username" })
   user: User;

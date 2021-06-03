@@ -19,7 +19,7 @@ const main = async () => {
   const PORT = process.env.PORT;
   const app = express();
 
-  app.use(morgan("dev"));
+  app.use(morgan("dev") as any);
   app.use(cookieParser());
   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
   app.get("/", (_req, res) => res.send("Hello world!"));

@@ -16,6 +16,9 @@ import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { createWriteStream } from "fs";
 import { File, UploadedFileResponse } from "../types/Upload";
 import { GraphQLUpload } from "graphql-upload";
+// import multer, { FileFilterCallback } from "multer";
+// import { makeId } from "../utils/helpers";
+// import path from "path";
 
 @Resolver()
 export class CategoryResolver {
@@ -92,7 +95,48 @@ export class CategoryResolver {
     if (!owner) throw new AuthenticationError("认证失败");
     try {
       const categories = await Category.find({ where: { owner } });
-      return categories;
+      if (categories) return categories;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  //更新类别
+  @UseMiddleware(isAuth)
+  @Mutation(() => Category)
+  async updateCategory(
+    @Ctx() { payload }: MyContext,
+    @Arg("oldName") oldName: string,
+    @Arg("newName") newName: string,
+    @Arg("desc") desc: string
+  ) {
+    const user = await User.findOneOrFail({ id: payload!.userId });
+    if (!user) throw new AuthenticationError("认证失败");
+    try {
+      let errors: any = {};
+      if (isEmpty(oldName)) errors.oldName = "请输入要替换的类名";
+      if (isEmpty(newName)) errors.newName = "类名不得为空";
+      if (isEmpty(desc)) errors.desc = "要输入的描述不得为空";
+
+      if (Object.keys(errors).length > 0) {
+        throw errors;
+      }
+
+      let catToUpd = await getRepository(Category)
+        .createQueryBuilder("category")
+        .where("lower(category.name)=:oldName", {
+          oldName: oldName.toLowerCase(),
+        })
+        .getOne();
+
+      if (!catToUpd) errors.name = "您要更新的类名不存在，请直接创建";
+
+      catToUpd!.name = newName;
+      catToUpd!.desc = desc;
+
+      await catToUpd!.save();
+      return catToUpd;
     } catch (err) {
       console.log(err);
       return err;
@@ -102,7 +146,7 @@ export class CategoryResolver {
   //上传图片
   @UseMiddleware(isAuth)
   @Mutation(() => String)
-  async singleFileUpload(
+  async uploadCatBanner(
     @Ctx() { payload }: MyContext,
     @Arg("file", () => GraphQLUpload) { createReadStream, filename }: File
   ): Promise<UploadedFileResponse> {
@@ -111,10 +155,29 @@ export class CategoryResolver {
     if (!user) throw new AuthenticationError("认证失败");
 
     const stream = createReadStream();
-    stream.pipe(createWriteStream(__dirname, `/../../../images/${filename}`));
+    stream.pipe(
+      createWriteStream(__dirname, `/../../../uploads/categories/${filename}`)
+    );
 
     return {
-      url: `http://localhost:4000/images/${filename}`,
+      url: `http://localhost:4000/uploads/categories/${filename}`,
     };
   }
 }
+
+// const upload = multer({
+//   storage: multer.diskStorage({
+//     destination: "uploads/categories/",
+//     filename: (_, file, callback) => {
+//       const name = makeId(15);
+//       callback(null, name + path.extname);
+//     },
+//   }),
+//   fileFilter: (__, file: any, callback: FileFilterCallback) => {
+//     if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("无效的图片类型"));
+//     }
+//   },
+// });

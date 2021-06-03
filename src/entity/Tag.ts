@@ -1,4 +1,3 @@
-import { Exclude } from "class-transformer";
 import { Field, ObjectType } from "type-graphql";
 import {
   BeforeInsert,
@@ -6,17 +5,18 @@ import {
   Entity as TOEntity,
   Index,
   ManyToMany,
-  PrimaryGeneratedColumn,
 } from "typeorm";
 import { slugify } from "../utils/helpers";
 import Blog from "./Blog";
+import Entity from "./Entity";
 
 @ObjectType()
 @TOEntity("tags")
-export default class Tag {
-  @Exclude()
-  @PrimaryGeneratedColumn()
-  id: number;
+export default class Tag extends Entity {
+  constructor(tag: Partial<Tag>) {
+    super();
+    Object.assign(this, tag);
+  }
 
   @Field()
   @Column()

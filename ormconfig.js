@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const rootDir = process.env.NODE_ENV === "development" ? "src" : "build";
 
-const port = 5432;
+const port = parseInt(process.env.DB_PORT);
 
 module.exports = {
   type: "postgres",
