@@ -87,13 +87,13 @@ export class TagResolver {
       let errors: any = {};
       if (isEmpty(name)) errors.name = "请输入要删除的标签名";
 
-      if (Object.keys(errors).length > 0) {
-        throw errors;
-      }
-
       let tagToDel = await Tag.findOneOrFail(name);
 
       if (!tagToDel) errors.name = "您要删除的标签不存在，请重新输入";
+
+      if (Object.keys(errors).length > 0) {
+        throw errors;
+      }
 
       try {
         const deletedTag = await tagToDel!.remove();

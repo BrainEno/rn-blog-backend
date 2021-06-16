@@ -13,6 +13,9 @@ import User from "./entity/User";
 import { createAccessToken, createRefreshToken } from "./auth";
 import { sendRefreshtoken } from "./sendRefreshToken";
 import { CategoryResolver } from "./resolvers/CategoryResolvers";
+import { authChecker } from "./middleware/AuthChecker";
+import { TagResolver } from "./resolvers/TagResolvers";
+import { BlogResolver } from "./resolvers/BlogResolvers";
 
 const main = async () => {
   dotenv.config();
@@ -65,7 +68,8 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, CategoryResolver],
+      resolvers: [UserResolver, CategoryResolver, TagResolver, BlogResolver],
+      authChecker,
     }),
     context: ({ req, res }) => ({ req, res }),
     introspection: true,

@@ -11,6 +11,7 @@ import Blog from "./Blog";
 import Entity from "./Entity";
 import Vote from "./Vote";
 import Like from "./Like";
+import Roles from "../types/Roles";
 
 @ObjectType()
 @TOEntity("users")
@@ -36,6 +37,10 @@ export default class User extends Entity {
   @Column("text")
   @MinLength(6, { message: "密码不能小于6个字符" })
   password: string;
+
+  @Column("varchar", { nullable: false, default: Roles.NORMAL_USER })
+  @Field(() => [Roles])
+  roles: string;
 
   @Field(() => [Blog])
   @OneToMany(() => Blog, (blog) => blog.author)

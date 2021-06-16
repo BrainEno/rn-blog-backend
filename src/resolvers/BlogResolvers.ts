@@ -1,4 +1,5 @@
 import { AuthenticationError } from "apollo-server-errors";
+import { isEmpty } from "class-validator";
 import {
   Arg,
   Authorized,
@@ -8,6 +9,7 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
+import { getRepository } from "typeorm";
 import Blog from "../entity/Blog";
 import User from "../entity/User";
 import { isAuth } from "../middleware/isAuth";
@@ -72,7 +74,67 @@ export class BlogResolver {
   @Authorized()
   @UseMiddleware(isAuth)
   @Mutation(() => Blog)
-  async updateBlog(@Ctx() { payload }: MyContext) {
-    const owner = await User.findOneOrFail();
+  async updateBlog(
+    @Ctx() { payload }: MyContext,
+    @Arg("oldTitle") oldTitle: string,
+    @Arg("newTitle") newTitle: string,
+    @Arg("newBody") newBody: string,
+    @Arg("newDesc") newDesc?: string
+  ) {
+    const owner = await User.findOneOrFail({ id: payload?.userId });
+    if (!owner) throw new AuthenticationError("认证失败,无法编辑此文章");
+    try {
+      let errors: any = {};
+      if (isEmpty(oldTitle)) errors.oldName = "请输入要编辑的文章标题";
+      if (isEmpty(newBody)) errors.newBody = "文章内容不得为空";
+      if (isEmpty(newTitle)) errors.newTitle = "文章标题不得为空";
+      if (isEmpty(newDesc)) errors.desc = "文章简介不得为空";
+      let blogToUpd = await getRepository(Blog)
+        .createQueryBuilder("blog")
+        .where("lower(blog.title)=:oldTitle", {
+          oldTitle: oldTitle.toLowerCase(),
+        })
+        .getOne();
+
+      if (!blogToUpd) errors.title = "未找到改标题的文章";
+
+      blogToUpd!.title = newTitle;
+      blogToUpd!.body = newBody;
+      blogToUpd!.desc = newDesc || newBody.trim().slice(0, 45);
+
+      await blogToUpd!.save();
+      return blogToUpd;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  //删除博客
+  @UseMiddleware(isAuth)
+  @Mutation(() => Blog)
+  async deleteBlog(@Ctx() { payload }: MyContext, @Arg("id") id: number) {
+    const owner = await User.findOneOrFail({ id: payload?.userId });
+    if (!owner) throw new AuthenticationError("认证失败,没有权限删除文章");
+
+    try {
+      let errors: any = {};
+      if (isEmpty(id)) errors.id = "请选择要删除的文章";
+
+      let blogToDel = await Blog.findOneOrFail(id);
+      if (!blogToDel) errors.blog = "您要删除的文章不存在，请重新选择";
+      if (Object.keys(errors).length > 0) {
+        throw errors;
+      }
+      try {
+        const deletedBlog = await blogToDel!.remove();
+        return deletedBlog;
+      } catch (err) {
+        return err;
+      }
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
   }
 }
