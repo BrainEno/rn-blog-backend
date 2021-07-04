@@ -52,8 +52,15 @@ export default class User extends Entity {
 
   @Field(() => [Like])
   @OneToMany(() => Like, (like) => like.blog)
-  @JoinColumn({ name: "likedBlogs", referencedColumnName: "blog" })
+  @JoinColumn({
+    name: "likedBlogs",
+    referencedColumnName: "id",
+  })
   like: Like;
+
+  @Field()
+  @Column({ nullable: true })
+  likedBlogs?: number;
 
   @Column("int", { default: 0 })
   tokenVersion: number;

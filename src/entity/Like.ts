@@ -1,11 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import {
-  Entity as TOEntity,
-  Column,
-  OneToOne,
-  ManyToOne,
-  JoinColumn,
-} from "typeorm";
+import { Entity as TOEntity, Column, ManyToOne, JoinColumn } from "typeorm";
 import Entity from "./Entity";
 import Blog from "./Blog";
 import User from "./User";
@@ -18,9 +12,10 @@ export default class Like extends Entity {
     Object.assign(this, like);
   }
 
+  //已收藏：1，未收藏：0
   @Field()
-  @Column()
-  count: number;
+  @Column({ default: 0 })
+  isLiked: number;
 
   @Field(() => User)
   @ManyToOne(() => User)
@@ -32,6 +27,11 @@ export default class Like extends Entity {
   username: string;
 
   @Field(() => Blog)
-  @OneToOne(() => Blog)
+  @ManyToOne(() => Blog)
+  @JoinColumn({ name: "likedBlogId", referencedColumnName: "id" })
   blog: Blog;
+
+  @Field()
+  @Column()
+  likedBlogId: number;
 }

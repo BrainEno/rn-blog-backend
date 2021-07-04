@@ -16,6 +16,7 @@ import Vote from "./Vote";
 import { Expose } from "class-transformer";
 import { slugify } from "../utils/helpers";
 import Tag from "./Tag";
+import Like from "./Like";
 
 @ObjectType()
 @TOEntity("blogs")
@@ -62,6 +63,10 @@ export default class Blog extends Entity {
   @Column()
   author: string;
 
+  @Field()
+  @Column({ default: false })
+  isPublished: boolean;
+
   @ManyToOne(() => User, (user) => user.blogs)
   @JoinColumn({ name: "author", referencedColumnName: "username" })
   user: User;
@@ -74,6 +79,10 @@ export default class Blog extends Entity {
   @OneToMany(() => Vote, (vote) => vote.blog)
   votes: Vote[];
 
+  @Field(() => Like)
+  @OneToMany(() => Like, (like) => like.blog)
+  likes: Like[];
+
   @Field()
   protected userVote: number;
   setUserVote(user: User) {
@@ -81,6 +90,15 @@ export default class Blog extends Entity {
       (v): any => v.username === user.username
     );
     this.userVote = index > -1 ? this.votes[index].value : 0;
+  }
+
+  @Field()
+  protected userLike: number;
+  setUserLike(user: User) {
+    const index = this.likes?.findIndex(
+      (l): any => l.username === user.username
+    );
+    this.userLike = index > -1 ? this.likes[index].isLiked : 0;
   }
 
   @Field()
@@ -94,6 +112,16 @@ export default class Blog extends Entity {
   get voteScore(): number {
     return this.votes?.reduce(
       (prev: any, curr: any) => prev + (curr.value || 0),
+      0
+    );
+  }
+
+  //返回收藏数
+  @Field()
+  @Expose()
+  get likesNum(): number {
+    return this.likes?.reduce(
+      (prev: any, curr: any) => prev + (curr.isLiked || 0),
       0
     );
   }

@@ -26,7 +26,7 @@ class LoginResponse {
 export class UserResolver {
   @Query(() => String)
   hello() {
-    return "hi there";
+    return "Welcome!";
   }
 
   //查找所有用户
@@ -77,7 +77,7 @@ export class UserResolver {
     @Arg("password") password: string,
     @Ctx() { res }: MyContext
   ): Promise<LoginResponse> {
-    //验证用户存在
+    //通过邮箱验证用户存在
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
