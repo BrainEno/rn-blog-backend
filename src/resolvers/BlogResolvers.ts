@@ -1,5 +1,7 @@
 import { AuthenticationError } from "apollo-server-errors";
 import { isEmpty } from "class-validator";
+import multer, { FileFilterCallback } from "multer";
+import path from "path";
 import {
   Arg,
   Authorized,
@@ -9,15 +11,17 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { getRepository } from "typeorm";
+
 import Blog from "../entity/Blog";
 import User from "../entity/User";
+// import { authChecker } from "../middleware/AuthChecker";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types/MyContext";
+import { makeId } from "../utils/helpers";
 
 @Resolver()
 export class BlogResolver {
-  //新建博客
+  //新建文章
   @UseMiddleware(isAuth)
   @Mutation(() => Blog)
   async createBlog(
@@ -41,7 +45,33 @@ export class BlogResolver {
     }
   }
 
-  //列出所有博客
+  //发布文章
+  @UseMiddleware(isAuth)
+  @Mutation(() => Blog)
+  async pubBlog(
+    @Ctx() { payload }: MyContext,
+    @Arg("identifier") identifier: string
+  ) {
+    const owner = await User.findOneOrFail({ id: payload?.userId });
+    if (!owner) throw new AuthenticationError("认证失败,无法编辑此文章");
+    try {
+      let errors: any = {};
+      if (isEmpty(identifier)) errors.identifier = "请选择要更新的文章";
+      let blogToPub = await Blog.findOneOrFail({ identifier });
+      if (!blogToPub) throw new Error("未找到您要发布的文章，请重试");
+      blogToPub.isPublished = true;
+      try {
+        await blogToPub.save();
+      } catch (err) {
+        throw err;
+      }
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  //列出所有文章
   @Query(() => [Blog])
   async listAllBlogs() {
     try {
@@ -70,13 +100,13 @@ export class BlogResolver {
     }
   }
 
-  //更新博客
+  //更新文章
   @Authorized()
   @UseMiddleware(isAuth)
   @Mutation(() => Blog)
   async updateBlog(
     @Ctx() { payload }: MyContext,
-    @Arg("oldTitle") oldTitle: string,
+    @Arg("identifier") identifier: string,
     @Arg("newTitle") newTitle: string,
     @Arg("newBody") newBody: string,
     @Arg("newDesc") newDesc?: string
@@ -85,18 +115,13 @@ export class BlogResolver {
     if (!owner) throw new AuthenticationError("认证失败,无法编辑此文章");
     try {
       let errors: any = {};
-      if (isEmpty(oldTitle)) errors.oldName = "请输入要编辑的文章标题";
+      if (isEmpty(identifier)) errors.oldName = "请选择要更新的文章";
       if (isEmpty(newBody)) errors.newBody = "文章内容不得为空";
       if (isEmpty(newTitle)) errors.newTitle = "文章标题不得为空";
       if (isEmpty(newDesc)) errors.desc = "文章简介不得为空";
-      let blogToUpd = await getRepository(Blog)
-        .createQueryBuilder("blog")
-        .where("lower(blog.title)=:oldTitle", {
-          oldTitle: oldTitle.toLowerCase(),
-        })
-        .getOne();
+      let blogToUpd = await Blog.findOneOrFail({ identifier });
 
-      if (!blogToUpd) errors.title = "未找到改标题的文章";
+      if (!blogToUpd) errors.title = "未找到文章";
 
       blogToUpd!.title = newTitle;
       blogToUpd!.body = newBody;
@@ -110,7 +135,7 @@ export class BlogResolver {
     }
   }
 
-  //删除博客
+  //删除文章
   @UseMiddleware(isAuth)
   @Mutation(() => Blog)
   async deleteBlog(@Ctx() { payload }: MyContext, @Arg("id") id: number) {
@@ -137,4 +162,40 @@ export class BlogResolver {
       return err;
     }
   }
+
+  //上传博客图片
+  @UseMiddleware(isAuth)
+  @Mutation(() => String)
+  async uploadBlogPic(
+    @Ctx() { payload }: MyContext,
+    @Arg("identifier") identifier: string,
+    @Arg("filename") filename: string
+  ) {
+    const user = await User.findOne({ id: payload!.userId });
+
+    if (!user) throw new AuthenticationError("认证失败");
+    let blog = await Blog.findOneOrFail(identifier);
+    if (!blog) throw new Error("未找到要上传图片的文章，请重试");
+    upload.single(filename);
+    blog.imageUrn = `${process.env.BASE_URL}/uploads/blogs/${filename}`;
+    await blog.save();
+    return blog.imageUrn;
+  }
 }
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "uploads/blogs/",
+    filename: (_, __, callback) => {
+      const name = makeId(15);
+      callback(null, name + path.extname);
+    },
+  }),
+  fileFilter: (__, file: any, callback: FileFilterCallback) => {
+    if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
+      callback(null, true);
+    } else {
+      callback(new Error("无效的图片类型"));
+    }
+  },
+});

@@ -17,7 +17,7 @@ import { authChecker } from "./middleware/AuthChecker";
 import { TagResolver } from "./resolvers/TagResolvers";
 import { BlogResolver } from "./resolvers/BlogResolvers";
 
-const main = async () => {
+const bootstrap = async () => {
   dotenv.config();
   const PORT = process.env.PORT;
   const app = express();
@@ -83,4 +83,4 @@ const main = async () => {
   });
 };
 
-main();
+bootstrap();

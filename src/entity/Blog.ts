@@ -13,7 +13,7 @@ import Entity from "./Entity";
 import User from "./User";
 import Comment from "./Comment";
 import Vote from "./Vote";
-import { Expose } from "class-transformer";
+import { Exclude, Expose } from "class-transformer";
 import { slugify } from "../utils/helpers";
 import Tag from "./Tag";
 import Like from "./Like";
@@ -27,12 +27,13 @@ export default class Blog extends Entity {
   }
 
   @Field()
+  @Index()
   @Column("uuid", { unique: true })
   identifier: string;
 
   @Field()
   @Index()
-  @Column("text", { unique: true })
+  @Column("varchar", { unique: true })
   slug: string;
 
   @Field()
@@ -52,7 +53,7 @@ export default class Blog extends Entity {
   imageUrn: string;
 
   @Field()
-  @Column()
+  @Column("text")
   categoryName: string;
 
   @Field(() => [Tag])
@@ -71,15 +72,15 @@ export default class Blog extends Entity {
   @JoinColumn({ name: "author", referencedColumnName: "username" })
   user: User;
 
-  @Field(() => [Comment])
+  @Exclude()
   @OneToMany(() => Comment, (comment) => comment.blog)
   comments: Comment[];
 
-  @Field(() => [Vote])
+  @Exclude()
   @OneToMany(() => Vote, (vote) => vote.blog)
   votes: Vote[];
 
-  @Field(() => Like)
+  @Exclude()
   @OneToMany(() => Like, (like) => like.blog)
   likes: Like[];
 
@@ -119,7 +120,7 @@ export default class Blog extends Entity {
   //返回收藏数
   @Field()
   @Expose()
-  get likesNum(): number {
+  get likesCount(): number {
     return this.likes?.reduce(
       (prev: any, curr: any) => prev + (curr.isLiked || 0),
       0

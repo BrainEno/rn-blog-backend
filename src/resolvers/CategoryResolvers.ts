@@ -119,23 +119,31 @@ export class CategoryResolver {
       if (isEmpty(newName)) errors.newName = "类名不得为空";
       if (isEmpty(desc)) errors.desc = "要输入的描述不得为空";
 
-      if (Object.keys(errors).length > 0) {
-        throw errors;
-      }
+      if (Object.keys(errors).length > 0) throw errors;
 
-      let catToUpd = await getRepository(Category)
-        .createQueryBuilder("category")
-        .where("lower(category.name)=:oldName", {
-          oldName: oldName.toLowerCase(),
-        })
-        .getOne();
+      // let catToUpd = await getRepository(Category)
+      //   .createQueryBuilder("category")
+      //   .where("lower(category.name)=:oldName", {
+      //     oldName: oldName.toLowerCase(),
+      //   })
+      //   .getOne();
+
+      let catToUpd = await Category.findOneOrFail({ name: oldName });
 
       if (!catToUpd) errors.name = "您要更新的类名不存在，请直接创建";
+
+      if (Object.keys(errors).length > 0) throw errors;
 
       catToUpd!.name = newName;
       catToUpd!.desc = desc;
 
-      await catToUpd!.save();
+      try {
+        await catToUpd!.save();
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
+
       return catToUpd;
     } catch (err) {
       console.log(err);
@@ -148,6 +156,7 @@ export class CategoryResolver {
   @Mutation(() => String)
   async uploadCatBanner(
     @Ctx() { payload }: MyContext,
+    @Arg("catName") cateName: string,
     @Arg("file", () => GraphQLUpload) { createReadStream, filename }: File
   ): Promise<UploadedFileResponse> {
     const user = await User.findOne({ id: payload!.userId });
@@ -155,29 +164,17 @@ export class CategoryResolver {
     if (!user) throw new AuthenticationError("认证失败");
 
     const stream = createReadStream();
+
     stream.pipe(
       createWriteStream(__dirname, `/../../../uploads/categories/${filename}`)
     );
 
+    let category = await Category.findOneOrFail({ name: cateName });
+    if (!category) throw new Error("未找到要上传封面的话题，请重试");
+    category.bannerUrn = `${process.env.BASE_URL}/uploads/categories/${filename}`;
+    await category.save();
     return {
-      url: `http://localhost:4000/uploads/categories/${filename}`,
+      url: `${process.env.BABEL_ENV}/uploads/categories/${filename}`,
     };
   }
 }
-
-// const upload = multer({
-//   storage: multer.diskStorage({
-//     destination: "uploads/categories/",
-//     filename: (_, file, callback) => {
-//       const name = makeId(15);
-//       callback(null, name + path.extname);
-//     },
-//   }),
-//   fileFilter: (__, file: any, callback: FileFilterCallback) => {
-//     if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("无效的图片类型"));
-//     }
-//   },
-// });
