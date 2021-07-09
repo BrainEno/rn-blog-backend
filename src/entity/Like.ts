@@ -14,7 +14,7 @@ export default class Like extends Entity {
 
   //已收藏：1，未收藏：0
   @Field()
-  @Column({ default: 0 })
+  @Column("int", { default: 0 })
   isLiked: number;
 
   @Field(() => User)

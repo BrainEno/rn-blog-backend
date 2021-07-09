@@ -36,4 +36,51 @@ export class CommentResolvers {
   }
 
   //编辑评论
+  @UseMiddleware(isAuth)
+  @Mutation(() => Comment)
+  async editComment(
+    @Ctx() { payload }: MyContext,
+    @Arg("identifier") identifier: string,
+    @Arg("newContent") newContent: string
+  ) {
+    const user = await User.findOne({ id: payload!.userId });
+    if (!user) throw new AuthenticationError("认证失败");
+
+    const commentToEdt = await Comment.findOneOrFail({ identifier });
+    if (!commentToEdt) throw new Error("无法编辑该评论，请重试");
+
+    if (isEmpty(newContent)) throw new Error("输入内容不得为空");
+
+    commentToEdt.content = newContent;
+
+    try {
+      const editedComment = await commentToEdt.save();
+      return editedComment;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  //删除评论
+  @UseMiddleware(isAuth)
+  @Mutation(() => Comment)
+  async removeComment(
+    @Arg("identifier") identifier: string,
+    @Ctx() { payload }: MyContext
+  ) {
+    const user = await User.findOne({ id: payload!.userId });
+    if (!user) throw new AuthenticationError("认证失败");
+
+    const commentToRm = await Comment.findOneOrFail({ identifier });
+    if (!commentToRm) throw new Error("无法删除该评论，请重试");
+
+    try {
+      const RemovedComment = await commentToRm.remove();
+      return RemovedComment;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
 }

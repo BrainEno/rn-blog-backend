@@ -1,6 +1,6 @@
 import { PrimaryGeneratedColumn, BaseEntity, CreateDateColumn } from "typeorm";
-
-import { classToPlain, Exclude } from "class-transformer";
+import { Exclude } from "class-transformer";
+import { Field } from "type-graphql";
 
 export default abstract class Entity extends BaseEntity {
   @Exclude()
@@ -8,12 +8,10 @@ export default abstract class Entity extends BaseEntity {
   id: number;
 
   @CreateDateColumn()
+  @Field()
   createdAt: Date;
 
   @CreateDateColumn()
+  @Field()
   updatedAt: Date;
-
-  toJSON() {
-    return classToPlain(this);
-  }
 }

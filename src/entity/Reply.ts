@@ -9,18 +9,17 @@ import {
   BeforeInsert,
 } from "typeorm";
 import User from "./User";
-import Blog from "./Blog";
 import Entity from "./Entity";
 import { MaxLength } from "class-validator";
 import { makeId } from "../utils/helpers";
-import Reply from "./Reply";
+import Comment from "./Comment";
 
 @ObjectType()
 @TOEntity("comments")
-export default class Comment extends Entity {
-  constructor(comment: Partial<Comment>) {
+export default class Reply extends Entity {
+  constructor(reply: Partial<Reply>) {
     super();
-    Object.assign(this, comment);
+    Object.assign(this, reply);
   }
 
   @Field()
@@ -41,17 +40,13 @@ export default class Comment extends Entity {
   @JoinColumn({ name: "username", referencedColumnName: "username" })
   user: User;
 
-  //评论收到的回复
-  @Field(() => Reply)
-  @ManyToMany(() => Reply, (reply) => reply.comments)
-  replies?: Reply[];
-
-  @Field(() => Blog)
-  @ManyToOne(() => Blog, (blog) => blog.comments)
-  blog: Blog;
+  //将要回复的评论
+  @Field(() => Comment)
+  @ManyToMany(() => Comment, (comment) => comment.replies)
+  comments?: Comment[];
 
   @BeforeInsert()
   makeId() {
-    this.identifier = "c-" + makeId(5);
+    this.identifier = "r-" + makeId(5);
   }
 }

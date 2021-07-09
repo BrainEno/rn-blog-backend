@@ -14,7 +14,7 @@ export default class Vote extends Entity {
   }
 
   @Field()
-  @Column()
+  @Column("int")
   value: number;
 
   @Field(() => User)
@@ -23,7 +23,7 @@ export default class Vote extends Entity {
   user: User;
 
   @Field()
-  @Column()
+  @Column("varchar")
   username: string;
 
   @Field(() => Blog)

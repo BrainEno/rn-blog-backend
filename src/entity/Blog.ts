@@ -14,9 +14,10 @@ import User from "./User";
 import Comment from "./Comment";
 import Vote from "./Vote";
 import { Exclude, Expose } from "class-transformer";
-import { slugify } from "../utils/helpers";
+import { makeId, slugify } from "../utils/helpers";
 import Tag from "./Tag";
 import Like from "./Like";
+import Category from "./Category";
 
 @ObjectType()
 @TOEntity("blogs")
@@ -28,7 +29,7 @@ export default class Blog extends Entity {
 
   @Field()
   @Index()
-  @Column("uuid", { unique: true })
+  @Column("varchar", { unique: true })
   identifier: string;
 
   @Field()
@@ -52,13 +53,13 @@ export default class Blog extends Entity {
   @Column({ nullable: true })
   imageUrn: string;
 
-  @Field()
-  @Column("text")
-  categoryName: string;
-
   @Field(() => [Tag])
-  @ManyToMany(() => Tag, (tag) => tag.name)
+  @ManyToMany(() => Tag, (tag) => tag.blogs)
   tags?: Tag[];
+
+  @Field(() => [Category])
+  @ManyToMany(() => Category, (category) => category.blogs)
+  categories?: Category[];
 
   @Field()
   @Column()
@@ -102,13 +103,13 @@ export default class Blog extends Entity {
     this.userLike = index > -1 ? this.likes[index].isLiked : 0;
   }
 
-  @Field()
+  @Field({ defaultValue: 0 })
   @Expose()
   get commentCount(): number {
     return this.comments?.length;
   }
 
-  @Field()
+  @Field({ defaultValue: 0 })
   @Expose()
   get voteScore(): number {
     return this.votes?.reduce(
@@ -118,7 +119,7 @@ export default class Blog extends Entity {
   }
 
   //返回收藏数
-  @Field()
+  @Field({ defaultValue: 0 })
   @Expose()
   get likesCount(): number {
     return this.likes?.reduce(
@@ -130,5 +131,10 @@ export default class Blog extends Entity {
   @BeforeInsert()
   makeSlug() {
     this.slug = slugify(this.title);
+  }
+
+  @BeforeInsert()
+  makeId() {
+    this.identifier = makeId(6);
   }
 }

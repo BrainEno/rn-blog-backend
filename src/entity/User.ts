@@ -6,11 +6,14 @@ import {
   OneToMany,
   Index,
   JoinColumn,
+  BeforeInsert,
 } from "typeorm";
 import Blog from "./Blog";
 import Entity from "./Entity";
 import Vote from "./Vote";
 import Like from "./Like";
+import Comment from "./Comment";
+import Reply from "./Reply";
 import Roles from "../types/Roles";
 
 @ObjectType()
@@ -48,20 +51,33 @@ export default class User extends Entity {
 
   @Field(() => [Vote])
   @OneToMany(() => Vote, (vote) => vote.user)
-  vote: Vote[];
+  votes: Vote[];
 
   @Field(() => [Like])
-  @OneToMany(() => Like, (like) => like.blog)
+  @OneToMany(() => Like, (like) => like.user)
   @JoinColumn({
     name: "likedBlogs",
     referencedColumnName: "id",
   })
-  like: Like;
+  likes: Like[];
+
+  @Field(() => [Comment])
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
+
+  @Field(() => [Reply])
+  @OneToMany(() => Reply, (reply) => reply.user)
+  replies: Reply[];
 
   @Field()
   @Column({ nullable: true })
-  likedBlogs?: number;
+  likedBlogNum?: number;
 
   @Column("int", { default: 0 })
   tokenVersion: number;
+
+  @BeforeInsert()
+  getLikedBlogNum() {
+    this.likedBlogNum = this.likes.length;
+  }
 }

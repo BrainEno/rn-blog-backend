@@ -41,6 +41,6 @@ export default class Category extends Entity {
   user: User;
 
   @Field(() => [Blog])
-  @OneToMany(() => Blog, (blog) => blog.id)
+  @OneToMany(() => Blog, (blog) => blog.categories)
   blogs?: Blog[];
 }

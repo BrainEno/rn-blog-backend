@@ -16,6 +16,7 @@ import { CategoryResolver } from "./resolvers/CategoryResolvers";
 import { authChecker } from "./middleware/AuthChecker";
 import { TagResolver } from "./resolvers/TagResolvers";
 import { BlogResolver } from "./resolvers/BlogResolvers";
+import { CommentResolvers } from "./resolvers/CommentResolvers";
 
 const bootstrap = async () => {
   dotenv.config();
@@ -68,7 +69,13 @@ const bootstrap = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, CategoryResolver, TagResolver, BlogResolver],
+      resolvers: [
+        UserResolver,
+        CategoryResolver,
+        TagResolver,
+        BlogResolver,
+        CommentResolvers,
+      ],
       authChecker,
     }),
     context: ({ req, res }) => ({ req, res }),
