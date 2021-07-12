@@ -45,6 +45,16 @@ export default class User extends Entity {
   @Field(() => [Roles])
   roles: string;
 
+  @Column("varchar", {
+    default:
+      "https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png",
+  })
+  @Field({
+    defaultValue:
+      "https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png",
+  })
+  avatar: string;
+
   @Field(() => [Blog])
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];

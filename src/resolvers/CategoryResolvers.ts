@@ -16,9 +16,6 @@ import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { createWriteStream } from "fs";
 import { File, UploadedFileResponse } from "../types/Upload";
 import { GraphQLUpload } from "graphql-upload";
-// import multer, { FileFilterCallback } from "multer";
-// import { makeId } from "../utils/helpers";
-// import path from "path";
 
 @Resolver()
 export class CategoryResolver {
@@ -121,13 +118,6 @@ export class CategoryResolver {
 
       if (Object.keys(errors).length > 0) throw errors;
 
-      // let catToUpd = await getRepository(Category)
-      //   .createQueryBuilder("category")
-      //   .where("lower(category.name)=:oldName", {
-      //     oldName: oldName.toLowerCase(),
-      //   })
-      //   .getOne();
-
       let catToUpd = await Category.findOneOrFail({ name: oldName });
 
       if (!catToUpd) errors.name = "您要更新的类名不存在，请直接创建";
@@ -165,7 +155,7 @@ export class CategoryResolver {
 
     const stream = createReadStream();
 
-    stream.pipe(
+    await stream.pipe(
       createWriteStream(__dirname, `/../../../uploads/categories/${filename}`)
     );
 

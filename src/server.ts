@@ -25,7 +25,7 @@ const bootstrap = async () => {
 
   app.use(morgan("dev") as any);
   app.use(cookieParser());
-  app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
+  app.use(cors({ origin: "*" }));
   app.get("/", (_req, res) => res.send("Hello world!"));
 
   //刷新token;
