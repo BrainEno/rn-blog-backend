@@ -5,7 +5,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/graphql-upload": "^8.0.5",
-    "@types/jsonwebtoken": "^8.5.3",
+    "@types/jsonwebtoken": "^8.5.4",
     "@types/morgan": "^1.9.2",
     "@types/node": "^16.0.0",
     "cross-env": "^7.0.3",

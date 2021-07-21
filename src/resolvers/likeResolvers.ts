@@ -1,8 +1,8 @@
 import { AuthenticationError } from "apollo-server-express";
 import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
-import Blog from "../entity/Blog";
-import Like from "../entity/Like";
-import User from "../entity/User";
+import Blog from "../entities/Blog";
+import Like from "../entities/Like";
+import User from "../entities/User";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types/MyContext";
 

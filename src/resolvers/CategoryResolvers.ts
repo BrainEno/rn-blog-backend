@@ -10,8 +10,8 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { getRepository } from "typeorm";
-import User from "../entity/User";
-import Category from "../entity/Category";
+import User from "../entities/User";
+import Category from "../entities/Category";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { createWriteStream } from "fs";
 import { File, UploadedFileResponse } from "../types/Upload";

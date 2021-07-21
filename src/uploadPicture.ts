@@ -2,10 +2,10 @@ import multer, { FileFilterCallback } from "multer";
 import { Response, Request } from "express";
 import path from "path/posix";
 import { makeId } from "./utils/helpers";
-import User from "./entity/User";
+import User from "./entities/User";
 import fs from "fs";
-import Blog from "./entity/Blog";
-import Category from "./entity/Category";
+import Blog from "./entities/Blog";
+import Category from "./entities/Category";
 
 const imageTypes = ["image/jpeg", "image/png", "image/svg+xml"];
 

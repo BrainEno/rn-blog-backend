@@ -1,10 +1,10 @@
 import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
 import { isAuth } from "../middleware/isAuth";
-import Comment from "../entity/Comment";
+import Comment from "../entities/Comment";
 import { AuthenticationError } from "apollo-server-express";
-import User from "../entity/User";
+import User from "../entities/User";
 import { MyContext } from "../types/MyContext";
-import Blog from "../entity/Blog";
+import Blog from "../entities/Blog";
 import { isEmpty } from "class-validator";
 
 @Resolver()

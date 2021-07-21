@@ -11,8 +11,8 @@ import {
 } from "type-graphql";
 import { getRepository } from "typeorm";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
-import Tag from "../entity/Tag";
-import User from "../entity/User";
+import Tag from "../entities/Tag";
+import User from "../entities/User";
 
 @Resolver()
 export class TagResolver {

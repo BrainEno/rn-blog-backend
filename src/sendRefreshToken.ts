@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { createAccessToken, createRefreshToken } from "./auth";
-import User from "./entity/User";
+import User from "./entities/User";
 
 const sendRefreshtoken = (res: Response, token: string) => {
   res.cookie("bot", token, {

@@ -12,8 +12,8 @@ import {
   UseMiddleware,
 } from "type-graphql";
 
-import Blog from "../entity/Blog";
-import User from "../entity/User";
+import Blog from "../entities/Blog";
+import User from "../entities/User";
 // import { authChecker } from "../middleware/AuthChecker";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types/MyContext";
