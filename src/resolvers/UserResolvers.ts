@@ -13,7 +13,7 @@ import User from "../entity/User";
 import { MyContext } from "../types/MyContext";
 import { isAuth } from "../middleware/isAuth";
 import { createAccessToken, createRefreshToken } from "../auth";
-import { sendRefreshtoken } from "../sendRefreshToken";
+import _ from "../sendRefreshToken";
 import { getConnection } from "typeorm";
 
 @ObjectType()
@@ -93,7 +93,7 @@ export class UserResolver {
 
     //登录成功
 
-    sendRefreshtoken(res, createRefreshToken(user));
+    _.sendRefreshtoken(res, createRefreshToken(user));
 
     return {
       accessToken: createAccessToken(user),

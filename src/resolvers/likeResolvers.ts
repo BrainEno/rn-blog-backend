@@ -1,12 +1,5 @@
 import { AuthenticationError } from "apollo-server-express";
-import {
-  Arg,
-  Authorized,
-  Ctx,
-  Mutation,
-  Resolver,
-  UseMiddleware,
-} from "type-graphql";
+import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
 import Blog from "../entity/Blog";
 import Like from "../entity/Like";
 import User from "../entity/User";
@@ -38,7 +31,6 @@ export class LikeResolver {
           isLiked,
           user,
           blog,
-          likedBlogId: blogId,
         });
         await newLike.save();
         return newLike;

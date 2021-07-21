@@ -3,20 +3,12 @@ import "reflect-metadata";
 import express from "express";
 import morgan from "morgan";
 import { ApolloServer } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
-import { UserResolver } from "./resolvers/UserResolvers";
 import { createConnection } from "typeorm";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { verify } from "jsonwebtoken";
-import User from "./entity/User";
-import { createAccessToken, createRefreshToken } from "./auth";
-import { sendRefreshtoken } from "./sendRefreshToken";
-import { CategoryResolver } from "./resolvers/CategoryResolvers";
-import { authChecker } from "./middleware/AuthChecker";
-import { TagResolver } from "./resolvers/TagResolvers";
-import { BlogResolver } from "./resolvers/BlogResolvers";
-import { CommentResolvers } from "./resolvers/CommentResolvers";
+import { createSchema } from "./utils/createSchema";
+import { upload, uploadAvatar, uploadPicture } from "./uploadPicture";
+import _ from "./sendRefreshToken";
 
 const bootstrap = async () => {
   dotenv.config();
@@ -26,39 +18,15 @@ const bootstrap = async () => {
   app.use(morgan("dev") as any);
   app.use(cookieParser());
   app.use(cors({ origin: "*" }));
+  app.use(express.static("./uploads"));
   app.get("/", (_req, res) => res.send("Hello world!"));
-
+  //上传用户头像
+  app.post("/upload/avatar", upload.single("file"), uploadAvatar);
+  //上传博客图片或类别图片
+  app.post("/upload/blog", upload.single("file"), uploadPicture);
+  app.post("/upload/category", upload.single("file"), uploadPicture);
   //刷新token;
-  app.post("/refresh_token", async (req, res) => {
-    const token = req.cookies.bot;
-    if (!token) {
-      return res.send({ ok: false, accessToken: "" });
-    }
-
-    let payload: any = null;
-
-    try {
-      payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
-    } catch (err) {
-      console.log(err);
-      return res.send({ ok: false, accessToken: "" });
-    }
-
-    // 如果token有效, 发送一个访问许可;
-    const user = await User.findOne({ id: payload.userId });
-
-    if (!user) {
-      return res.send({ ok: false, accessToken: "" });
-    }
-
-    if (user.tokenVersion !== payload.tokenVersion) {
-      return res.send({ ok: false, accessToken: "" });
-    }
-
-    sendRefreshtoken(res, createRefreshToken(user));
-
-    return res.send({ ok: true, accessToken: createAccessToken(user) });
-  });
+  app.post("/refresh_token", _.sendRefreshTokenController);
 
   try {
     await createConnection();
@@ -67,17 +35,10 @@ const bootstrap = async () => {
     console.log(err);
   }
 
+  const schema = await createSchema();
+
   const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [
-        UserResolver,
-        CategoryResolver,
-        TagResolver,
-        BlogResolver,
-        CommentResolvers,
-      ],
-      authChecker,
-    }),
+    schema,
     context: ({ req, res }) => ({ req, res }),
     introspection: true,
     playground: true,

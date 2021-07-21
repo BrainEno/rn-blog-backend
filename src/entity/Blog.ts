@@ -118,7 +118,6 @@ export default class Blog extends Entity {
     );
   }
 
-  //返回收藏数
   @Field({ defaultValue: 0 })
   @Expose()
   get likesCount(): number {

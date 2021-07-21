@@ -28,10 +28,5 @@ export default class Like extends Entity {
 
   @Field(() => Blog)
   @ManyToOne(() => Blog)
-  @JoinColumn({ name: "likedBlogId", referencedColumnName: "id" })
   blog: Blog;
-
-  @Field()
-  @Column()
-  likedBlogId: number;
 }
