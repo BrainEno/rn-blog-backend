@@ -1,4 +1,3 @@
-require("reflect-metadata");
 require("dotenv").config();
 
 const rootDir = process.env.NODE_ENV === "development" ? "src" : "build";
@@ -16,11 +15,11 @@ module.exports =
         database: process.env.DB_DATABASE,
         synchronize: true,
         logging: process.env.NODE_ENV === "development",
-        entities: [rootDir + "/entity/**/*{.ts,.js}"],
+        entities: [rootDir + "/entities/**/*{.ts,.js}"],
         migrations: [rootDir + "/migrations/**/*{.ts,.js}"],
         subscribers: [rootDir + "/subscribers/**/*{.ts,.js}"],
         cli: {
-          entitiesDir: rootDir + "/entity",
+          entitiesDir: rootDir + "/entities",
           migrationsDir: rootDir + "/migrations",
           subscribersDir: rootDir + "/subscribers",
         },
@@ -33,7 +32,7 @@ module.exports =
         logging: false,
         entities: [rootDir + "/entities/**/*{.ts,.js}"],
         migrations: [rootDir + "/migrations/**/*{.ts,.js}"],
-        subscribers: [rootDir + "/subscriber/**/*{.ts,.js}"],
+        subscribers: [rootDir + "/subscribers/**/*{.ts,.js}"],
         seeds: [rootDir + "/seeds/**/*{.ts,.js}"],
         extra: {
           ssl: { rejectUnauthorized: false },

@@ -41,10 +41,12 @@ const bootstrap = async () => {
     schema,
     context: ({ req, res }) => ({ req, res }),
     introspection: true,
-    playground: true,
+    // playground: true,
   });
 
-  apolloServer.applyMiddleware({ app });
+  await apolloServer.start();
+
+  apolloServer.applyMiddleware({ app } as any);
 
   app.listen(PORT, () => {
     console.log(`Server started on http://localhost:${PORT}/graphql`);
