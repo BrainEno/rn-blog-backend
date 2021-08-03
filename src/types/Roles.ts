@@ -2,8 +2,8 @@ import { registerEnumType } from "type-graphql";
 
 enum Roles {
   ADMIN = "ADMIN",
-  AUTH_USER = "AUTH",
-  NORMAL_USER = "PASSAGER",
+  AUTH_USER = "AUTH_USER",
+  PASSAGER = "PASSAGER",
 }
 
 registerEnumType(Roles, {
@@ -11,13 +11,13 @@ registerEnumType(Roles, {
   description: "user roles",
   valuesConfig: {
     ADMIN: {
-      description: "admin users",
+      description: "Admin users",
     },
     AUTH_USER: {
-      description: "authed users",
+      description: "Authenticated users",
     },
-    NORMAL_USER: {
-      description: "passager users",
+    PASSAGER: {
+      description: "Unauthenticated users",
     },
   },
 });

@@ -7,6 +7,10 @@ import { createConnection } from "typeorm";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { createSchema } from "./utils/createSchema";
+import { graphqlUploadExpress } from "graphql-upload";
+import { createServer } from "http";
+import { execute, subscribe } from "graphql";
+import { SubscriptionServer } from "subscriptions-transport-ws";
 import { upload, uploadAvatar, uploadPicture } from "./uploadPicture";
 import _ from "./sendRefreshToken";
 
@@ -19,6 +23,7 @@ const bootstrap = async () => {
   app.use(cookieParser());
   app.use(cors({ origin: "*" }));
   app.use(express.static("./uploads"));
+  app.use(graphqlUploadExpress());
   app.get("/", (_req, res) => res.send("Hello world!"));
   //上传用户头像
   app.post("/upload/avatar", upload.single("file"), uploadAvatar);
@@ -27,6 +32,8 @@ const bootstrap = async () => {
   app.post("/upload/category", upload.single("file"), uploadPicture);
   //刷新token;
   app.post("/refresh_token", _.sendRefreshTokenController);
+
+  const httpServer = createServer(app);
 
   try {
     await createConnection();
@@ -41,14 +48,28 @@ const bootstrap = async () => {
     schema,
     context: ({ req, res }) => ({ req, res }),
     introspection: true,
-    // playground: true,
   });
 
   await apolloServer.start();
-
   apolloServer.applyMiddleware({ app } as any);
 
-  app.listen(PORT, () => {
+  const subscriptionServer = SubscriptionServer.create(
+    {
+      schema,
+      execute,
+      subscribe,
+    },
+    {
+      server: httpServer,
+      path: apolloServer.graphqlPath,
+    }
+  );
+
+  ["SIGINT", "SIGTERM"].forEach((signal) => {
+    process.on(signal, () => subscriptionServer.close());
+  });
+
+  httpServer.listen(PORT, () => {
     console.log(`Server started on http://localhost:${PORT}/graphql`);
   });
 };

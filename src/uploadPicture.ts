@@ -1,6 +1,6 @@
 import multer, { FileFilterCallback } from "multer";
 import { Response, Request } from "express";
-import path from "path/posix";
+import path from "path";
 import { makeId } from "./utils/helpers";
 import User from "./entities/User";
 import fs from "fs";

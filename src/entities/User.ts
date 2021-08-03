@@ -41,7 +41,7 @@ export default class User extends Entity {
   @MinLength(6, { message: "密码不能小于6个字符" })
   password: string;
 
-  @Column("varchar", { nullable: false, default: Roles.NORMAL_USER })
+  @Column("varchar", { nullable: false, default: Roles.PASSAGER })
   @Field(() => [Roles])
   roles: string;
 

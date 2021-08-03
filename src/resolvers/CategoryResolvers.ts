@@ -16,6 +16,7 @@ import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { createWriteStream } from "fs";
 import { File, UploadedFileResponse } from "../types/Upload";
 import { GraphQLUpload } from "graphql-upload";
+import path from "path";
 
 @Resolver()
 export class CategoryResolver {
@@ -156,7 +157,9 @@ export class CategoryResolver {
     const stream = createReadStream();
 
     await stream.pipe(
-      createWriteStream(__dirname, `/../../../uploads/categories/${filename}`)
+      createWriteStream(
+        path.join(__dirname, `/../../../uploads/categories/${filename}`)
+      )
     );
 
     let category = await Category.findOneOrFail({ name: cateName });
