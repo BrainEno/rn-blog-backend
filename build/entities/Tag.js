@@ -23,34 +23,34 @@ let Tag = class Tag extends Entity_1.default {
         Object.assign(this, tag);
     }
     makeSlug() {
-        this.slug = helpers_1.slugify(this.name);
+        this.slug = (0, helpers_1.slugify)(this.name);
     }
 };
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column(),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Tag.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(() => [Blog_1.default]),
-    typeorm_1.ManyToMany(() => Blog_1.default, (blog) => blog.id),
+    (0, type_graphql_1.Field)(() => [Blog_1.default]),
+    (0, typeorm_1.ManyToMany)(() => Blog_1.default, (blog) => blog.id),
     __metadata("design:type", Array)
 ], Tag.prototype, "blogs", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Index(),
-    typeorm_1.Column("text", { unique: true }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.Column)('text', { unique: true }),
     __metadata("design:type", String)
 ], Tag.prototype, "slug", void 0);
 __decorate([
-    typeorm_1.BeforeInsert(),
+    (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Tag.prototype, "makeSlug", null);
 Tag = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("tags"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('tags'),
     __metadata("design:paramtypes", [Object])
 ], Tag);
 exports.default = Tag;

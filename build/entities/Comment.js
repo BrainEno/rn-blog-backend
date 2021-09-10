@@ -26,50 +26,50 @@ let Comment = class Comment extends Entity_1.default {
         Object.assign(this, comment);
     }
     makeId() {
-        this.identifier = "c-" + helpers_1.makeId(5);
+        this.identifier = 'c-' + (0, helpers_1.makeId)(5);
     }
 };
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Index(),
-    typeorm_1.Column("varchar", { unique: true }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.Column)('varchar', { unique: true }),
     __metadata("design:type", String)
 ], Comment.prototype, "identifier", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    class_validator_1.MaxLength(150),
-    typeorm_1.Column("text", { nullable: false }),
+    (0, type_graphql_1.Field)(),
+    (0, class_validator_1.MaxLength)(150),
+    (0, typeorm_1.Column)('text', { nullable: false }),
     __metadata("design:type", String)
 ], Comment.prototype, "content", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column({ nullable: false }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)({ nullable: false }),
     __metadata("design:type", String)
 ], Comment.prototype, "username", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => User_1.default),
-    typeorm_1.JoinColumn({ name: "username", referencedColumnName: "username" }),
+    (0, typeorm_1.ManyToOne)(() => User_1.default),
+    (0, typeorm_1.JoinColumn)({ name: 'username', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Comment.prototype, "user", void 0);
 __decorate([
-    type_graphql_1.Field(() => Reply_1.default),
-    typeorm_1.ManyToMany(() => Reply_1.default, (reply) => reply.comments),
+    (0, type_graphql_1.Field)(() => Reply_1.default),
+    (0, typeorm_1.ManyToMany)(() => Reply_1.default, (reply) => reply.comments),
     __metadata("design:type", Array)
 ], Comment.prototype, "replies", void 0);
 __decorate([
-    type_graphql_1.Field(() => Blog_1.default),
-    typeorm_1.ManyToOne(() => Blog_1.default, (blog) => blog.comments),
+    (0, type_graphql_1.Field)(() => Blog_1.default),
+    (0, typeorm_1.ManyToOne)(() => Blog_1.default, (blog) => blog.comments),
     __metadata("design:type", Blog_1.default)
 ], Comment.prototype, "blog", void 0);
 __decorate([
-    typeorm_1.BeforeInsert(),
+    (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Comment.prototype, "makeId", null);
 Comment = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("comments"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('comments'),
     __metadata("design:paramtypes", [Object])
 ], Comment);
 exports.default = Comment;

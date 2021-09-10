@@ -23,50 +23,50 @@ let Message = class Message extends Entity_1.default {
         Object.assign(this, message);
     }
     makeId() {
-        this.identifier = "m-" + helpers_1.makeId(5);
+        this.identifier = 'm-' + (0, helpers_1.makeId)(5);
     }
 };
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("varchar"),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('varchar'),
     __metadata("design:type", String)
 ], Message.prototype, "identifier", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("text"),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('text'),
     __metadata("design:type", String)
 ], Message.prototype, "content", void 0);
 __decorate([
-    type_graphql_1.Field(() => User_1.default),
-    typeorm_1.ManyToOne(() => User_1.default),
-    typeorm_1.JoinColumn({ name: "msgTo", referencedColumnName: "username" }),
+    (0, type_graphql_1.Field)(() => User_1.default),
+    (0, typeorm_1.ManyToOne)(() => User_1.default),
+    (0, typeorm_1.JoinColumn)({ name: 'msgTo', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Message.prototype, "to", void 0);
 __decorate([
-    type_graphql_1.Field(() => User_1.default),
-    typeorm_1.ManyToOne(() => User_1.default),
-    typeorm_1.JoinColumn({ name: "msgFrom", referencedColumnName: "username" }),
+    (0, type_graphql_1.Field)(() => User_1.default),
+    (0, typeorm_1.ManyToOne)(() => User_1.default),
+    (0, typeorm_1.JoinColumn)({ name: 'msgFrom', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Message.prototype, "from", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column(),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Message.prototype, "msgTo", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column(),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Message.prototype, "msgFrom", void 0);
 __decorate([
-    typeorm_1.BeforeInsert(),
+    (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Message.prototype, "makeId", null);
 Message = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("messages"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('messages'),
     __metadata("design:paramtypes", [Object])
 ], Message);
 exports.default = Message;

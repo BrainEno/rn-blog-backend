@@ -25,33 +25,33 @@ let Vote = class Vote extends Entity_1.default {
     }
 };
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("int"),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('int'),
     __metadata("design:type", Number)
 ], Vote.prototype, "value", void 0);
 __decorate([
-    type_graphql_1.Field(() => User_1.default),
-    typeorm_1.ManyToOne(() => User_1.default),
-    typeorm_1.JoinColumn({ name: "username", referencedColumnName: "username" }),
+    (0, type_graphql_1.Field)(() => User_1.default),
+    (0, typeorm_1.ManyToOne)(() => User_1.default),
+    (0, typeorm_1.JoinColumn)({ name: 'username', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Vote.prototype, "user", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("varchar"),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('varchar'),
     __metadata("design:type", String)
 ], Vote.prototype, "username", void 0);
 __decorate([
-    type_graphql_1.Field(() => Blog_1.default),
-    typeorm_1.ManyToOne(() => Blog_1.default),
+    (0, type_graphql_1.Field)(() => Blog_1.default),
+    (0, typeorm_1.ManyToOne)(() => Blog_1.default),
     __metadata("design:type", Blog_1.default)
 ], Vote.prototype, "blog", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => Comment_1.default),
+    (0, typeorm_1.ManyToOne)(() => Comment_1.default),
     __metadata("design:type", Comment_1.default)
 ], Vote.prototype, "comment", void 0);
 Vote = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("votes"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('votes'),
     __metadata("design:paramtypes", [Object])
 ], Vote);
 exports.default = Vote;

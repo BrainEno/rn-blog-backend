@@ -4,23 +4,23 @@ const type_graphql_1 = require("type-graphql");
 var Roles;
 (function (Roles) {
     Roles["ADMIN"] = "ADMIN";
-    Roles["AUTH_USER"] = "AUTH";
-    Roles["NORMAL_USER"] = "PASSAGER";
+    Roles["AUTH_USER"] = "AUTH_USER";
+    Roles["PASSAGER"] = "PASSAGER";
 })(Roles || (Roles = {}));
-type_graphql_1.registerEnumType(Roles, {
-    name: "Roles",
-    description: "user roles",
+(0, type_graphql_1.registerEnumType)(Roles, {
+    name: 'Roles',
+    description: 'user roles',
     valuesConfig: {
         ADMIN: {
-            description: "admin users",
+            description: 'Admin users'
         },
         AUTH_USER: {
-            description: "authed users",
+            description: 'Authenticated users'
         },
-        NORMAL_USER: {
-            description: "passager users",
-        },
-    },
+        PASSAGER: {
+            description: 'Unauthenticated users'
+        }
+    }
 });
 exports.default = Roles;
 //# sourceMappingURL=Roles.js.map

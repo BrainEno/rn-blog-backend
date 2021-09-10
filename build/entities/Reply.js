@@ -25,45 +25,45 @@ let Reply = class Reply extends Entity_1.default {
         Object.assign(this, reply);
     }
     makeId() {
-        this.identifier = "r-" + helpers_1.makeId(5);
+        this.identifier = 'r-' + (0, helpers_1.makeId)(5);
     }
 };
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Index(),
-    typeorm_1.Column("varchar", { unique: true }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.Column)('varchar', { unique: true }),
     __metadata("design:type", String)
 ], Reply.prototype, "identifier", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    class_validator_1.MaxLength(150),
-    typeorm_1.Column("text", { nullable: false }),
+    (0, type_graphql_1.Field)(),
+    (0, class_validator_1.MaxLength)(150),
+    (0, typeorm_1.Column)('text', { nullable: false }),
     __metadata("design:type", String)
 ], Reply.prototype, "content", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column({ nullable: false }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)({ nullable: false }),
     __metadata("design:type", String)
 ], Reply.prototype, "username", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => User_1.default),
-    typeorm_1.JoinColumn({ name: "username", referencedColumnName: "username" }),
+    (0, typeorm_1.ManyToOne)(() => User_1.default),
+    (0, typeorm_1.JoinColumn)({ name: 'username', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Reply.prototype, "user", void 0);
 __decorate([
-    type_graphql_1.Field(() => Comment_1.default),
-    typeorm_1.ManyToMany(() => Comment_1.default, (comment) => comment.replies),
+    (0, type_graphql_1.Field)(() => Comment_1.default),
+    (0, typeorm_1.ManyToMany)(() => Comment_1.default, (comment) => comment.replies),
     __metadata("design:type", Array)
 ], Reply.prototype, "comments", void 0);
 __decorate([
-    typeorm_1.BeforeInsert(),
+    (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Reply.prototype, "makeId", null);
 Reply = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("comments"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('comments'),
     __metadata("design:paramtypes", [Object])
 ], Reply);
 exports.default = Reply;

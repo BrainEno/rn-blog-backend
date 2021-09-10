@@ -51,125 +51,125 @@ let Blog = class Blog extends Entity_1.default {
         return (_a = this.likes) === null || _a === void 0 ? void 0 : _a.reduce((prev, curr) => prev + (curr.isLiked || 0), 0);
     }
     makeSlug() {
-        this.slug = helpers_1.slugify(this.title);
+        this.slug = (0, helpers_1.slugify)(this.title);
     }
     makeId() {
-        this.identifier = helpers_1.makeId(6);
+        this.identifier = (0, helpers_1.makeId)(6);
     }
 };
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Index(),
-    typeorm_1.Column("varchar", { unique: true }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.Column)('varchar', { unique: true }),
     __metadata("design:type", String)
 ], Blog.prototype, "identifier", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Index(),
-    typeorm_1.Column("varchar", { unique: true }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.Column)('varchar', { unique: true }),
     __metadata("design:type", String)
 ], Blog.prototype, "slug", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("text", { nullable: false }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('text', { nullable: false }),
     __metadata("design:type", String)
 ], Blog.prototype, "title", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("text"),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('text'),
     __metadata("design:type", String)
 ], Blog.prototype, "desc", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("text", { nullable: false }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('text', { nullable: false }),
     __metadata("design:type", String)
 ], Blog.prototype, "body", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column({ nullable: true }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Blog.prototype, "imageUrn", void 0);
 __decorate([
-    type_graphql_1.Field(() => [Tag_1.default]),
-    typeorm_1.ManyToMany(() => Tag_1.default, (tag) => tag.blogs),
+    (0, type_graphql_1.Field)(() => [Tag_1.default]),
+    (0, typeorm_1.ManyToMany)(() => Tag_1.default, (tag) => tag.blogs),
     __metadata("design:type", Array)
 ], Blog.prototype, "tags", void 0);
 __decorate([
-    type_graphql_1.Field(() => [Category_1.default]),
-    typeorm_1.ManyToMany(() => Category_1.default, (category) => category.blogs),
+    (0, type_graphql_1.Field)(() => [Category_1.default]),
+    (0, typeorm_1.ManyToMany)(() => Category_1.default, (category) => category.blogs),
     __metadata("design:type", Array)
 ], Blog.prototype, "categories", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column(),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Blog.prototype, "author", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column({ default: false }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], Blog.prototype, "isPublished", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => User_1.default, (user) => user.blogs),
-    typeorm_1.JoinColumn({ name: "author", referencedColumnName: "username" }),
+    (0, typeorm_1.ManyToOne)(() => User_1.default, (user) => user.blogs),
+    (0, typeorm_1.JoinColumn)({ name: 'author', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Blog.prototype, "user", void 0);
 __decorate([
-    class_transformer_1.Exclude(),
-    typeorm_1.OneToMany(() => Comment_1.default, (comment) => comment.blog),
+    (0, class_transformer_1.Exclude)(),
+    (0, typeorm_1.OneToMany)(() => Comment_1.default, (comment) => comment.blog),
     __metadata("design:type", Array)
 ], Blog.prototype, "comments", void 0);
 __decorate([
-    class_transformer_1.Exclude(),
-    typeorm_1.OneToMany(() => Vote_1.default, (vote) => vote.blog),
+    (0, class_transformer_1.Exclude)(),
+    (0, typeorm_1.OneToMany)(() => Vote_1.default, (vote) => vote.blog),
     __metadata("design:type", Array)
 ], Blog.prototype, "votes", void 0);
 __decorate([
-    class_transformer_1.Exclude(),
-    typeorm_1.OneToMany(() => Like_1.default, (like) => like.blog),
+    (0, class_transformer_1.Exclude)(),
+    (0, typeorm_1.OneToMany)(() => Like_1.default, (like) => like.blog),
     __metadata("design:type", Array)
 ], Blog.prototype, "likes", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", Number)
 ], Blog.prototype, "userVote", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", Number)
 ], Blog.prototype, "userLike", void 0);
 __decorate([
-    type_graphql_1.Field({ defaultValue: 0 }),
-    class_transformer_1.Expose(),
+    (0, type_graphql_1.Field)({ defaultValue: 0 }),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number),
     __metadata("design:paramtypes", [])
 ], Blog.prototype, "commentCount", null);
 __decorate([
-    type_graphql_1.Field({ defaultValue: 0 }),
-    class_transformer_1.Expose(),
+    (0, type_graphql_1.Field)({ defaultValue: 0 }),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number),
     __metadata("design:paramtypes", [])
 ], Blog.prototype, "voteScore", null);
 __decorate([
-    type_graphql_1.Field({ defaultValue: 0 }),
-    class_transformer_1.Expose(),
+    (0, type_graphql_1.Field)({ defaultValue: 0 }),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number),
     __metadata("design:paramtypes", [])
 ], Blog.prototype, "likesCount", null);
 __decorate([
-    typeorm_1.BeforeInsert(),
+    (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Blog.prototype, "makeSlug", null);
 __decorate([
-    typeorm_1.BeforeInsert(),
+    (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Blog.prototype, "makeId", null);
 Blog = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("blogs"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('blogs'),
     __metadata("design:paramtypes", [Object])
 ], Blog);
 exports.default = Blog;

@@ -16,32 +16,32 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const auth_1 = require("./auth");
 const User_1 = __importDefault(require("./entities/User"));
 const sendRefreshtoken = (res, token) => {
-    res.cookie("bot", token, {
-        httpOnly: true,
+    res.cookie('bot', token, {
+        httpOnly: true
     });
 };
 const sendRefreshTokenController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.bot;
     if (!token) {
-        return res.send({ ok: false, accessToken: "" });
+        return res.send({ ok: false, accessToken: '' });
     }
     let payload = null;
     try {
-        payload = jsonwebtoken_1.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        payload = (0, jsonwebtoken_1.verify)(token, process.env.REFRESH_TOKEN_SECRET);
     }
     catch (err) {
         console.log(err);
-        return res.send({ ok: false, accessToken: "" });
+        return res.send({ ok: false, accessToken: '' });
     }
     const user = yield User_1.default.findOne({ id: payload.userId });
     if (!user) {
-        return res.send({ ok: false, accessToken: "" });
+        return res.send({ ok: false, accessToken: '' });
     }
     if (user.tokenVersion !== payload.tokenVersion) {
-        return res.send({ ok: false, accessToken: "" });
+        return res.send({ ok: false, accessToken: '' });
     }
-    sendRefreshtoken(res, auth_1.createRefreshToken(user));
-    return res.send({ ok: true, accessToken: auth_1.createAccessToken(user) });
+    sendRefreshtoken(res, (0, auth_1.createRefreshToken)(user));
+    return res.send({ ok: true, accessToken: (0, auth_1.createAccessToken)(user) });
 });
 const _ = { sendRefreshTokenController, sendRefreshtoken };
 exports.default = _;

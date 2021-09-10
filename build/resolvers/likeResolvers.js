@@ -36,20 +36,20 @@ let LikeResolver = class LikeResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             try {
                 let newLike;
                 const like = yield Like_1.default.findOne({ username: user.username });
                 if (like && like.isLiked !== 0)
                     like.isLiked = 0;
                 if (!like) {
-                    let blog = yield Blog_1.default.findOneOrFail({ id: blogId });
+                    const blog = yield Blog_1.default.findOneOrFail({ id: blogId });
                     if (!blog)
-                        throw new Error("无法收藏该文章，请重试");
+                        throw new Error('无法收藏该文章，请重试');
                     newLike = new Like_1.default({
                         isLiked,
                         user,
-                        blog,
+                        blog
                     });
                     yield newLike.save();
                     return newLike;
@@ -63,17 +63,17 @@ let LikeResolver = class LikeResolver {
     }
 };
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Like_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("isLiked")),
-    __param(2, type_graphql_1.Arg("blogId")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Like_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('isLiked')),
+    __param(2, (0, type_graphql_1.Arg)('blogId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Number, Number]),
     __metadata("design:returntype", Promise)
 ], LikeResolver.prototype, "ToggleLike", null);
 LikeResolver = __decorate([
-    type_graphql_1.Resolver()
+    (0, type_graphql_1.Resolver)()
 ], LikeResolver);
 exports.LikeResolver = LikeResolver;
 //# sourceMappingURL=likeResolvers.js.map

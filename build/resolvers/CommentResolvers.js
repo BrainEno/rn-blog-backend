@@ -37,12 +37,12 @@ let CommentResolvers = class CommentResolvers {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             const blog = yield Blog_1.default.findOneOrFail({ identifier: blogIdentifier });
             if (!blog)
-                throw new Error("不可评论该文章，请重试");
-            if (class_validator_1.isEmpty(content))
-                throw new Error("评论内容不得为空");
+                throw new Error('不可评论该文章，请重试');
+            if ((0, class_validator_1.isEmpty)(content))
+                throw new Error('评论内容不得为空');
             try {
                 const comment = new Comment_1.default({ content, blog, user });
                 yield comment.save();
@@ -58,12 +58,12 @@ let CommentResolvers = class CommentResolvers {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             const commentToEdt = yield Comment_1.default.findOneOrFail({ identifier });
             if (!commentToEdt)
-                throw new Error("无法编辑该评论，请重试");
-            if (class_validator_1.isEmpty(newContent))
-                throw new Error("输入内容不得为空");
+                throw new Error('无法编辑该评论，请重试');
+            if ((0, class_validator_1.isEmpty)(newContent))
+                throw new Error('输入内容不得为空');
             commentToEdt.content = newContent;
             try {
                 const editedComment = yield commentToEdt.save();
@@ -79,10 +79,10 @@ let CommentResolvers = class CommentResolvers {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             const commentToRm = yield Comment_1.default.findOneOrFail({ identifier });
             if (!commentToRm)
-                throw new Error("无法删除该评论，请重试");
+                throw new Error('无法删除该评论，请重试');
             try {
                 const RemovedComment = yield commentToRm.remove();
                 return RemovedComment;
@@ -95,36 +95,36 @@ let CommentResolvers = class CommentResolvers {
     }
 };
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Comment_1.default),
-    __param(0, type_graphql_1.Arg("blogIdentifier")),
-    __param(1, type_graphql_1.Arg("content")),
-    __param(2, type_graphql_1.Ctx()),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Comment_1.default),
+    __param(0, (0, type_graphql_1.Arg)('blogIdentifier')),
+    __param(1, (0, type_graphql_1.Arg)('content')),
+    __param(2, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], CommentResolvers.prototype, "newComment", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Comment_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("identifier")),
-    __param(2, type_graphql_1.Arg("newContent")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Comment_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('identifier')),
+    __param(2, (0, type_graphql_1.Arg)('newContent')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], CommentResolvers.prototype, "editComment", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Comment_1.default),
-    __param(0, type_graphql_1.Arg("identifier")),
-    __param(1, type_graphql_1.Ctx()),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Comment_1.default),
+    __param(0, (0, type_graphql_1.Arg)('identifier')),
+    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], CommentResolvers.prototype, "removeComment", null);
 CommentResolvers = __decorate([
-    type_graphql_1.Resolver()
+    (0, type_graphql_1.Resolver)()
 ], CommentResolvers);
 exports.CommentResolvers = CommentResolvers;
 //# sourceMappingURL=CommentResolvers.js.map

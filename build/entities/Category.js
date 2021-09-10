@@ -24,39 +24,39 @@ let Category = class Category extends Entity_1.default {
     }
 };
 __decorate([
-    type_graphql_1.Field({ nullable: false }),
-    typeorm_1.Index(),
-    typeorm_1.Column("text", { unique: true }),
+    (0, type_graphql_1.Field)({ nullable: false }),
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.Column)('text', { unique: true }),
     __metadata("design:type", String)
 ], Category.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field({ nullable: true }),
-    typeorm_1.Column("text", { nullable: true }),
+    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, typeorm_1.Column)('text', { nullable: true }),
     __metadata("design:type", String)
 ], Category.prototype, "desc", void 0);
 __decorate([
-    type_graphql_1.Field({ nullable: true }),
-    typeorm_1.Column({ nullable: true }),
+    (0, type_graphql_1.Field)({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Category.prototype, "bannerUrn", void 0);
 __decorate([
-    type_graphql_1.Field({ nullable: false }),
-    typeorm_1.Column("text", { name: "owner" }),
+    (0, type_graphql_1.Field)({ nullable: false }),
+    (0, typeorm_1.Column)('text', { name: 'owner' }),
     __metadata("design:type", String)
 ], Category.prototype, "owner", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => User_1.default),
-    typeorm_1.JoinColumn({ name: "owner", referencedColumnName: "username" }),
+    (0, typeorm_1.ManyToOne)(() => User_1.default),
+    (0, typeorm_1.JoinColumn)({ name: 'owner', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Category.prototype, "user", void 0);
 __decorate([
-    type_graphql_1.Field(() => [Blog_1.default]),
-    typeorm_1.OneToMany(() => Blog_1.default, (blog) => blog.categories),
+    (0, type_graphql_1.Field)(() => [Blog_1.default]),
+    (0, typeorm_1.OneToMany)(() => Blog_1.default, (blog) => blog.categories),
     __metadata("design:type", Array)
 ], Category.prototype, "blogs", void 0);
 Category = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("categories"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('categories'),
     __metadata("design:paramtypes", [Object])
 ], Category);
 exports.default = Category;

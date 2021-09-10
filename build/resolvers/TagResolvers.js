@@ -37,17 +37,17 @@ let TagResolver = class TagResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             try {
-                let errors = {};
-                if (class_validator_1.isEmpty(name))
-                    errors.name = "标签名不得为空";
-                const isTag = yield typeorm_1.getRepository(Tag_1.default)
-                    .createQueryBuilder("tag")
-                    .where("lower(tag.name)=:name", { name: name.toLowerCase() })
+                const errors = {};
+                if ((0, class_validator_1.isEmpty)(name))
+                    errors.name = '标签名不得为空';
+                const isTag = yield (0, typeorm_1.getRepository)(Tag_1.default)
+                    .createQueryBuilder('tag')
+                    .where('lower(tag.name)=:name', { name: name.toLowerCase() })
                     .getOne();
                 if (isTag)
-                    errors.name = "该类名已存在";
+                    errors.name = '该类名已存在';
                 if (Object.keys(errors).length > 0) {
                     throw errors;
                 }
@@ -80,8 +80,8 @@ let TagResolver = class TagResolver {
     }
     getTagByName(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (class_validator_1.isEmpty(name))
-                throw new apollo_server_express_1.UserInputError("类名不得为空");
+            if ((0, class_validator_1.isEmpty)(name))
+                throw new apollo_server_express_1.UserInputError('类名不得为空');
             try {
                 const tag = yield Tag_1.default.findOne({ name });
                 return tag;
@@ -96,14 +96,14 @@ let TagResolver = class TagResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOneOrFail({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             try {
-                let errors = {};
-                if (class_validator_1.isEmpty(name))
-                    errors.name = "请输入要删除的标签名";
-                let tagToDel = yield Tag_1.default.findOneOrFail(name);
+                const errors = {};
+                if ((0, class_validator_1.isEmpty)(name))
+                    errors.name = '请输入要删除的标签名';
+                const tagToDel = yield Tag_1.default.findOneOrFail(name);
                 if (!tagToDel)
-                    errors.name = "您要删除的标签不存在，请重新输入";
+                    errors.name = '您要删除的标签不存在，请重新输入';
                 if (Object.keys(errors).length > 0) {
                     throw errors;
                 }
@@ -123,38 +123,38 @@ let TagResolver = class TagResolver {
     }
 };
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Tag_1.default),
-    __param(0, type_graphql_1.Arg("name")),
-    __param(1, type_graphql_1.Ctx()),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Tag_1.default),
+    __param(0, (0, type_graphql_1.Arg)('name')),
+    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], TagResolver.prototype, "createTag", null);
 __decorate([
-    type_graphql_1.Query(() => [Tag_1.default]),
+    (0, type_graphql_1.Query)(() => [Tag_1.default]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], TagResolver.prototype, "listAllTags", null);
 __decorate([
-    type_graphql_1.Query(() => Tag_1.default),
-    __param(0, type_graphql_1.Arg("name")),
+    (0, type_graphql_1.Query)(() => Tag_1.default),
+    __param(0, (0, type_graphql_1.Arg)('name')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TagResolver.prototype, "getTagByName", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Tag_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("name")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Tag_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('name')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], TagResolver.prototype, "deleteTag", null);
 TagResolver = __decorate([
-    type_graphql_1.Resolver()
+    (0, type_graphql_1.Resolver)()
 ], TagResolver);
 exports.TagResolver = TagResolver;
 //# sourceMappingURL=TagResolvers.js.map

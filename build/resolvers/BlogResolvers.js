@@ -39,7 +39,7 @@ let BlogResolver = class BlogResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_errors_1.AuthenticationError("认证失败，请登录");
+                throw new apollo_server_errors_1.AuthenticationError('认证失败，请登录');
             try {
                 const createdAt = new Date();
                 const blog = new Blog_1.default({ user, title, body, desc, createdAt });
@@ -56,21 +56,16 @@ let BlogResolver = class BlogResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const owner = yield User_1.default.findOneOrFail({ id: payload === null || payload === void 0 ? void 0 : payload.userId });
             if (!owner)
-                throw new apollo_server_errors_1.AuthenticationError("认证失败,无法编辑此文章");
+                throw new apollo_server_errors_1.AuthenticationError('认证失败,无法编辑此文章');
             try {
-                let errors = {};
-                if (class_validator_1.isEmpty(identifier))
-                    errors.identifier = "请选择要更新的文章";
-                let blogToPub = yield Blog_1.default.findOneOrFail({ identifier });
+                const errors = {};
+                if ((0, class_validator_1.isEmpty)(identifier))
+                    errors.identifier = '请选择要更新的文章';
+                const blogToPub = yield Blog_1.default.findOneOrFail({ identifier });
                 if (!blogToPub)
-                    throw new Error("未找到您要发布的文章，请重试");
+                    throw new Error('未找到您要发布的文章，请重试');
                 blogToPub.isPublished = true;
-                try {
-                    yield blogToPub.save();
-                }
-                catch (err) {
-                    throw err;
-                }
+                yield blogToPub.save();
             }
             catch (err) {
                 console.log(err);
@@ -94,11 +89,11 @@ let BlogResolver = class BlogResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const owner = yield User_1.default.findOneOrFail({ id: payload === null || payload === void 0 ? void 0 : payload.userId });
             if (!owner)
-                throw new apollo_server_errors_1.AuthenticationError("认证失败");
+                throw new apollo_server_errors_1.AuthenticationError('认证失败');
             try {
                 const blogs = yield Blog_1.default.find({ where: { user: owner } });
                 if (!blogs)
-                    throw new Error("您还没有写过文章");
+                    throw new Error('您还没有写过文章');
                 return blogs;
             }
             catch (err) {
@@ -111,20 +106,20 @@ let BlogResolver = class BlogResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const owner = yield User_1.default.findOneOrFail({ id: payload === null || payload === void 0 ? void 0 : payload.userId });
             if (!owner)
-                throw new apollo_server_errors_1.AuthenticationError("认证失败,无法编辑此文章");
+                throw new apollo_server_errors_1.AuthenticationError('认证失败,无法编辑此文章');
             try {
-                let errors = {};
-                if (class_validator_1.isEmpty(identifier))
-                    errors.oldName = "请选择要更新的文章";
-                if (class_validator_1.isEmpty(newBody))
-                    errors.newBody = "文章内容不得为空";
-                if (class_validator_1.isEmpty(newTitle))
-                    errors.newTitle = "文章标题不得为空";
-                if (class_validator_1.isEmpty(newDesc))
-                    errors.desc = "文章简介不得为空";
-                let blogToUpd = yield Blog_1.default.findOneOrFail({ identifier });
+                const errors = {};
+                if ((0, class_validator_1.isEmpty)(identifier))
+                    errors.oldName = '请选择要更新的文章';
+                if ((0, class_validator_1.isEmpty)(newBody))
+                    errors.newBody = '文章内容不得为空';
+                if ((0, class_validator_1.isEmpty)(newTitle))
+                    errors.newTitle = '文章标题不得为空';
+                if ((0, class_validator_1.isEmpty)(newDesc))
+                    errors.desc = '文章简介不得为空';
+                const blogToUpd = yield Blog_1.default.findOneOrFail({ identifier });
                 if (!blogToUpd)
-                    errors.title = "未找到文章";
+                    errors.title = '未找到文章';
                 blogToUpd.title = newTitle;
                 blogToUpd.body = newBody;
                 blogToUpd.desc = newDesc || newBody.trim().slice(0, 45);
@@ -141,14 +136,14 @@ let BlogResolver = class BlogResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const owner = yield User_1.default.findOneOrFail({ id: payload === null || payload === void 0 ? void 0 : payload.userId });
             if (!owner)
-                throw new apollo_server_errors_1.AuthenticationError("认证失败,没有权限删除文章");
+                throw new apollo_server_errors_1.AuthenticationError('认证失败,没有权限删除文章');
             try {
-                let errors = {};
-                if (class_validator_1.isEmpty(id))
-                    errors.id = "请选择要删除的文章";
-                let blogToDel = yield Blog_1.default.findOneOrFail(id);
+                const errors = {};
+                if ((0, class_validator_1.isEmpty)(id))
+                    errors.id = '请选择要删除的文章';
+                const blogToDel = yield Blog_1.default.findOneOrFail(id);
                 if (!blogToDel)
-                    errors.blog = "您要删除的文章不存在，请重新选择";
+                    errors.blog = '您要删除的文章不存在，请重新选择';
                 if (Object.keys(errors).length > 0) {
                     throw errors;
                 }
@@ -170,10 +165,10 @@ let BlogResolver = class BlogResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_errors_1.AuthenticationError("认证失败");
-            let blog = yield Blog_1.default.findOneOrFail(identifier);
+                throw new apollo_server_errors_1.AuthenticationError('认证失败');
+            const blog = yield Blog_1.default.findOneOrFail(identifier);
             if (!blog)
-                throw new Error("未找到要上传图片的文章，请重试");
+                throw new Error('未找到要上传图片的文章，请重试');
             upload.single(filename);
             blog.imageUrn = `${process.env.BASE_URL}/uploads/blogs/${filename}`;
             yield blog.save();
@@ -182,91 +177,91 @@ let BlogResolver = class BlogResolver {
     }
 };
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Blog_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("title")),
-    __param(2, type_graphql_1.Arg("body")),
-    __param(3, type_graphql_1.Arg("desc")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Blog_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('title')),
+    __param(2, (0, type_graphql_1.Arg)('body')),
+    __param(3, (0, type_graphql_1.Arg)('desc')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", Promise)
 ], BlogResolver.prototype, "createBlog", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Blog_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("identifier")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Blog_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('identifier')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], BlogResolver.prototype, "pubBlog", null);
 __decorate([
-    type_graphql_1.Query(() => [Blog_1.default]),
+    (0, type_graphql_1.Query)(() => [Blog_1.default]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BlogResolver.prototype, "listAllBlogs", null);
 __decorate([
-    type_graphql_1.Authorized(),
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Query(() => [Blog_1.default]),
-    __param(0, type_graphql_1.Ctx()),
+    (0, type_graphql_1.Authorized)(),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Query)(() => [Blog_1.default]),
+    __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], BlogResolver.prototype, "getOwnBlogs", null);
 __decorate([
-    type_graphql_1.Authorized(),
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Blog_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("identifier")),
-    __param(2, type_graphql_1.Arg("newTitle")),
-    __param(3, type_graphql_1.Arg("newBody")),
-    __param(4, type_graphql_1.Arg("newDesc")),
+    (0, type_graphql_1.Authorized)(),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Blog_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('identifier')),
+    __param(2, (0, type_graphql_1.Arg)('newTitle')),
+    __param(3, (0, type_graphql_1.Arg)('newBody')),
+    __param(4, (0, type_graphql_1.Arg)('newDesc')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], BlogResolver.prototype, "updateBlog", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Blog_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("id")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Blog_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], BlogResolver.prototype, "deleteBlog", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => String),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("identifier")),
-    __param(2, type_graphql_1.Arg("filename")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('identifier')),
+    __param(2, (0, type_graphql_1.Arg)('filename')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], BlogResolver.prototype, "uploadBlogPic", null);
 BlogResolver = __decorate([
-    type_graphql_1.Resolver()
+    (0, type_graphql_1.Resolver)()
 ], BlogResolver);
 exports.BlogResolver = BlogResolver;
-const upload = multer_1.default({
+const upload = (0, multer_1.default)({
     storage: multer_1.default.diskStorage({
-        destination: "uploads/blogs/",
+        destination: 'uploads/blogs/',
         filename: (_, __, callback) => {
-            const name = helpers_1.makeId(15);
+            const name = (0, helpers_1.makeId)(15);
             callback(null, name + path_1.default.extname);
-        },
+        }
     }),
     fileFilter: (__, file, callback) => {
-        if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
+        if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
             callback(null, true);
         }
         else {
-            callback(new Error("无效的图片类型"));
+            callback(new Error('无效的图片类型'));
         }
-    },
+    }
 });
 //# sourceMappingURL=BlogResolvers.js.map

@@ -34,22 +34,23 @@ const Category_1 = __importDefault(require("../entities/Category"));
 const apollo_server_express_1 = require("apollo-server-express");
 const fs_1 = require("fs");
 const graphql_upload_1 = require("graphql-upload");
+const path_1 = __importDefault(require("path"));
 let CategoryResolver = class CategoryResolver {
     createCategory(name, { payload }, desc) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             try {
-                let errors = {};
-                if (class_validator_1.isEmpty(name))
-                    errors.name = "类名不得为空";
-                const isCategory = yield typeorm_1.getRepository(Category_1.default)
-                    .createQueryBuilder("category")
-                    .where("lower(category.name)=:name", { name: name.toLowerCase() })
+                const errors = {};
+                if ((0, class_validator_1.isEmpty)(name))
+                    errors.name = '类名不得为空';
+                const isCategory = yield (0, typeorm_1.getRepository)(Category_1.default)
+                    .createQueryBuilder('category')
+                    .where('lower(category.name)=:name', { name: name.toLowerCase() })
                     .getOne();
                 if (isCategory)
-                    errors.name = "该类名已存在";
+                    errors.name = '该类名已存在';
                 if (Object.keys(errors).length > 0) {
                     throw errors;
                 }
@@ -82,8 +83,8 @@ let CategoryResolver = class CategoryResolver {
     }
     getCategoryByName(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (class_validator_1.isEmpty(name))
-                throw new apollo_server_express_1.UserInputError("类名不得为空");
+            if ((0, class_validator_1.isEmpty)(name))
+                throw new apollo_server_express_1.UserInputError('类名不得为空');
             try {
                 const category = yield Category_1.default.findOne({ name });
                 return category;
@@ -98,7 +99,7 @@ let CategoryResolver = class CategoryResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const owner = yield User_1.default.findOneOrFail({ id: payload.userId });
             if (!owner)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             try {
                 const categories = yield Category_1.default.find({ where: { owner } });
                 if (categories)
@@ -114,20 +115,20 @@ let CategoryResolver = class CategoryResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOneOrFail({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             try {
-                let errors = {};
-                if (class_validator_1.isEmpty(oldName))
-                    errors.oldName = "请输入要替换的类名";
-                if (class_validator_1.isEmpty(newName))
-                    errors.newName = "类名不得为空";
-                if (class_validator_1.isEmpty(desc))
-                    errors.desc = "要输入的描述不得为空";
+                const errors = {};
+                if ((0, class_validator_1.isEmpty)(oldName))
+                    errors.oldName = '请输入要替换的类名';
+                if ((0, class_validator_1.isEmpty)(newName))
+                    errors.newName = '类名不得为空';
+                if ((0, class_validator_1.isEmpty)(desc))
+                    errors.desc = '要输入的描述不得为空';
                 if (Object.keys(errors).length > 0)
                     throw errors;
-                let catToUpd = yield Category_1.default.findOneOrFail({ name: oldName });
+                const catToUpd = yield Category_1.default.findOneOrFail({ name: oldName });
                 if (!catToUpd)
-                    errors.name = "您要更新的类名不存在，请直接创建";
+                    errors.name = '您要更新的类名不存在，请直接创建';
                 if (Object.keys(errors).length > 0)
                     throw errors;
                 catToUpd.name = newName;
@@ -151,74 +152,74 @@ let CategoryResolver = class CategoryResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ id: payload.userId });
             if (!user)
-                throw new apollo_server_express_1.AuthenticationError("认证失败");
+                throw new apollo_server_express_1.AuthenticationError('认证失败');
             const stream = createReadStream();
-            yield stream.pipe(fs_1.createWriteStream(__dirname, `/../../../uploads/categories/${filename}`));
-            let category = yield Category_1.default.findOneOrFail({ name: cateName });
+            yield stream.pipe((0, fs_1.createWriteStream)(path_1.default.join(__dirname, `/../../../uploads/categories/${filename}`)));
+            const category = yield Category_1.default.findOneOrFail({ name: cateName });
             if (!category)
-                throw new Error("未找到要上传封面的话题，请重试");
+                throw new Error('未找到要上传封面的话题，请重试');
             category.bannerUrn = `${process.env.BASE_URL}/uploads/categories/${filename}`;
             yield category.save();
             return {
-                url: `${process.env.BABEL_ENV}/uploads/categories/${filename}`,
+                url: `${process.env.BABEL_ENV}/uploads/categories/${filename}`
             };
         });
     }
 };
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Category_1.default),
-    __param(0, type_graphql_1.Arg("name")),
-    __param(1, type_graphql_1.Ctx()),
-    __param(2, type_graphql_1.Arg("desc")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Category_1.default),
+    __param(0, (0, type_graphql_1.Arg)('name')),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __param(2, (0, type_graphql_1.Arg)('desc')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object, String]),
     __metadata("design:returntype", Promise)
 ], CategoryResolver.prototype, "createCategory", null);
 __decorate([
-    type_graphql_1.Query(() => [Category_1.default]),
+    (0, type_graphql_1.Query)(() => [Category_1.default]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CategoryResolver.prototype, "listAllCategories", null);
 __decorate([
-    type_graphql_1.Query(() => Category_1.default),
-    __param(0, type_graphql_1.Arg("name")),
+    (0, type_graphql_1.Query)(() => Category_1.default),
+    __param(0, (0, type_graphql_1.Arg)('name')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], CategoryResolver.prototype, "getCategoryByName", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Query(() => [Category_1.default]),
-    __param(0, type_graphql_1.Ctx()),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Query)(() => [Category_1.default]),
+    __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], CategoryResolver.prototype, "getOWnCategories", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => Category_1.default),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("oldName")),
-    __param(2, type_graphql_1.Arg("newName")),
-    __param(3, type_graphql_1.Arg("desc")),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => Category_1.default),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('oldName')),
+    __param(2, (0, type_graphql_1.Arg)('newName')),
+    __param(3, (0, type_graphql_1.Arg)('desc')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", Promise)
 ], CategoryResolver.prototype, "updateCategory", null);
 __decorate([
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    type_graphql_1.Mutation(() => String),
-    __param(0, type_graphql_1.Ctx()),
-    __param(1, type_graphql_1.Arg("catName")),
-    __param(2, type_graphql_1.Arg("file", () => graphql_upload_1.GraphQLUpload)),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    (0, type_graphql_1.Mutation)(() => String),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('catName')),
+    __param(2, (0, type_graphql_1.Arg)('file', () => graphql_upload_1.GraphQLUpload)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], CategoryResolver.prototype, "uploadCatBanner", null);
 CategoryResolver = __decorate([
-    type_graphql_1.Resolver()
+    (0, type_graphql_1.Resolver)()
 ], CategoryResolver);
 exports.CategoryResolver = CategoryResolver;
 //# sourceMappingURL=CategoryResolvers.js.map

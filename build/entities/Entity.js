@@ -15,18 +15,18 @@ const type_graphql_1 = require("type-graphql");
 class Entity extends typeorm_1.BaseEntity {
 }
 __decorate([
-    class_transformer_1.Exclude(),
-    typeorm_1.PrimaryGeneratedColumn(),
+    (0, class_transformer_1.Exclude)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Entity.prototype, "id", void 0);
 __decorate([
-    typeorm_1.CreateDateColumn(),
-    type_graphql_1.Field(),
+    (0, typeorm_1.CreateDateColumn)(),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", Date)
 ], Entity.prototype, "createdAt", void 0);
 __decorate([
-    typeorm_1.CreateDateColumn(),
-    type_graphql_1.Field(),
+    (0, typeorm_1.CreateDateColumn)(),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", Date)
 ], Entity.prototype, "updatedAt", void 0);
 exports.default = Entity;

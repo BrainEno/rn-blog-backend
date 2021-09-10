@@ -35,27 +35,27 @@ const typeorm_1 = require("typeorm");
 let LoginResponse = class LoginResponse {
 };
 __decorate([
-    type_graphql_1.Field(),
+    (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], LoginResponse.prototype, "accessToken", void 0);
 LoginResponse = __decorate([
-    type_graphql_1.ObjectType()
+    (0, type_graphql_1.ObjectType)()
 ], LoginResponse);
 let UserResolver = class UserResolver {
     hello() {
-        return "Welcome!";
+        return 'Welcome!';
     }
     users() {
         return User_1.default.find();
     }
     register(username, email, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            const hashedPassword = yield bcryptjs_1.hash(password, 12);
+            const hashedPassword = yield (0, bcryptjs_1.hash)(password, 12);
             try {
                 yield User_1.default.insert({
                     username,
                     email,
-                    password: hashedPassword,
+                    password: hashedPassword
                 });
             }
             catch (err) {
@@ -67,9 +67,9 @@ let UserResolver = class UserResolver {
     }
     revokeRefreshTokensForUser(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield typeorm_1.getConnection()
+            yield (0, typeorm_1.getConnection)()
                 .getRepository(User_1.default)
-                .increment({ id: userId }, "tokenVersion", 1);
+                .increment({ id: userId }, 'tokenVersion', 1);
             return true;
         });
     }
@@ -77,15 +77,15 @@ let UserResolver = class UserResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.default.findOne({ where: { email } });
             if (!user) {
-                throw new Error("该邮箱尚未注册,请先注册");
+                throw new Error('该邮箱尚未注册,请先注册');
             }
-            const valid = yield bcryptjs_1.compare(password, user.password);
+            const valid = yield (0, bcryptjs_1.compare)(password, user.password);
             if (!valid) {
-                throw new Error("密码错误，请重新输入");
+                throw new Error('密码错误，请重新输入');
             }
-            sendRefreshToken_1.default.sendRefreshtoken(res, auth_1.createRefreshToken(user));
+            sendRefreshToken_1.default.sendRefreshtoken(res, (0, auth_1.createRefreshToken)(user));
             return {
-                accessToken: auth_1.createAccessToken(user),
+                accessToken: (0, auth_1.createAccessToken)(user)
             };
         });
     }
@@ -93,7 +93,7 @@ let UserResolver = class UserResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const currentUser = yield User_1.default.findOne({ id: payload.userId });
             if (!currentUser) {
-                return "暂无用户";
+                return '暂无用户';
             }
             else {
                 return currentUser;
@@ -102,52 +102,52 @@ let UserResolver = class UserResolver {
     }
 };
 __decorate([
-    type_graphql_1.Query(() => String),
+    (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "hello", null);
 __decorate([
-    type_graphql_1.Query(() => [User_1.default]),
+    (0, type_graphql_1.Query)(() => [User_1.default]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "users", null);
 __decorate([
-    type_graphql_1.Mutation(() => Boolean),
-    __param(0, type_graphql_1.Arg("username")),
-    __param(1, type_graphql_1.Arg("email")),
-    __param(2, type_graphql_1.Arg("password")),
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, type_graphql_1.Arg)('username')),
+    __param(1, (0, type_graphql_1.Arg)('email')),
+    __param(2, (0, type_graphql_1.Arg)('password')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([
-    type_graphql_1.Mutation(() => Boolean),
-    __param(0, type_graphql_1.Arg("userId", () => Number)),
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, type_graphql_1.Arg)('userId', () => Number)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "revokeRefreshTokensForUser", null);
 __decorate([
-    type_graphql_1.Mutation(() => LoginResponse),
-    __param(0, type_graphql_1.Arg("email")),
-    __param(1, type_graphql_1.Arg("password")),
-    __param(2, type_graphql_1.Ctx()),
+    (0, type_graphql_1.Mutation)(() => LoginResponse),
+    __param(0, (0, type_graphql_1.Arg)('email')),
+    __param(1, (0, type_graphql_1.Arg)('password')),
+    __param(2, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
 __decorate([
-    type_graphql_1.Query(() => User_1.default),
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    __param(0, type_graphql_1.Ctx()),
+    (0, type_graphql_1.Query)(() => User_1.default),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "currentUser", null);
 UserResolver = __decorate([
-    type_graphql_1.Resolver()
+    (0, type_graphql_1.Resolver)()
 ], UserResolver);
 exports.UserResolver = UserResolver;
 //# sourceMappingURL=UserResolvers.js.map

@@ -24,29 +24,29 @@ let Like = class Like extends Entity_1.default {
     }
 };
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column("int", { default: 0 }),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)('int', { default: 0 }),
     __metadata("design:type", Number)
 ], Like.prototype, "isLiked", void 0);
 __decorate([
-    type_graphql_1.Field(() => User_1.default),
-    typeorm_1.ManyToOne(() => User_1.default),
-    typeorm_1.JoinColumn({ name: "username", referencedColumnName: "username" }),
+    (0, type_graphql_1.Field)(() => User_1.default),
+    (0, typeorm_1.ManyToOne)(() => User_1.default),
+    (0, typeorm_1.JoinColumn)({ name: 'username', referencedColumnName: 'username' }),
     __metadata("design:type", User_1.default)
 ], Like.prototype, "user", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column(),
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Like.prototype, "username", void 0);
 __decorate([
-    type_graphql_1.Field(() => Blog_1.default),
-    typeorm_1.ManyToOne(() => Blog_1.default),
+    (0, type_graphql_1.Field)(() => Blog_1.default),
+    (0, typeorm_1.ManyToOne)(() => Blog_1.default),
     __metadata("design:type", Blog_1.default)
 ], Like.prototype, "blog", void 0);
 Like = __decorate([
-    type_graphql_1.ObjectType(),
-    typeorm_1.Entity("likes"),
+    (0, type_graphql_1.ObjectType)(),
+    (0, typeorm_1.Entity)('likes'),
     __metadata("design:paramtypes", [Object])
 ], Like);
 exports.default = Like;
