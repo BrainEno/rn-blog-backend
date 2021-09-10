@@ -1,12 +1,12 @@
-import { Field, ObjectType } from "type-graphql";
-import { Entity as TOEntity, Column, ManyToOne, JoinColumn } from "typeorm";
-import Comment from "./Comment";
-import Entity from "./Entity";
-import Blog from "./Blog";
-import User from "./User";
+import { Field, ObjectType } from 'type-graphql';
+import { Entity as TOEntity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import Comment from './Comment';
+import Entity from './Entity';
+import Blog from './Blog';
+import User from './User';
 
 @ObjectType()
-@TOEntity("votes")
+@TOEntity('votes')
 export default class Vote extends Entity {
   constructor(vote: Partial<Vote>) {
     super();
@@ -14,16 +14,16 @@ export default class Vote extends Entity {
   }
 
   @Field()
-  @Column("int")
+  @Column('int')
   value: number;
 
   @Field(() => User)
   @ManyToOne(() => User)
-  @JoinColumn({ name: "username", referencedColumnName: "username" })
+  @JoinColumn({ name: 'username', referencedColumnName: 'username' })
   user: User;
 
   @Field()
-  @Column("varchar")
+  @Column('varchar')
   username: string;
 
   @Field(() => Blog)

@@ -1,5 +1,5 @@
-import { AuthChecker } from "type-graphql";
-import { MyContext } from "../types/MyContext";
+import { AuthChecker } from 'type-graphql';
+import { MyContext } from '../types/MyContext';
 
 export const authChecker: AuthChecker<MyContext> = (
   { context: { payload } },

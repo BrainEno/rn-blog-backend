@@ -1,0 +1,1 @@
+{"version":3,"file":"Entity.js","sourceRoot":"","sources":["../../src/entity/Entity.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,qCAA+E;AAC/E,yDAA4C;AAC5C,+CAAqC;AAErC,MAA8B,MAAO,SAAQ,oBAAU;CAYtD;AATC;IAFC,2BAAO,EAAE;IACT,gCAAsB,EAAE;;kCACd;AAIX;IAFC,0BAAgB,EAAE;IAClB,oBAAK,EAAE;8BACG,IAAI;yCAAC;AAIhB;IAFC,0BAAgB,EAAE;IAClB,oBAAK,EAAE;8BACG,IAAI;yCAAC;AAXlB,yBAYC"}

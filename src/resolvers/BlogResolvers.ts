@@ -1,7 +1,7 @@
-import { AuthenticationError } from "apollo-server-errors";
-import { isEmpty } from "class-validator";
-import multer, { FileFilterCallback } from "multer";
-import path from "path";
+import { AuthenticationError } from 'apollo-server-errors';
+import { isEmpty } from 'class-validator';
+import multer, { FileFilterCallback } from 'multer';
+import path from 'path';
 import {
   Arg,
   Authorized,
@@ -9,15 +9,15 @@ import {
   Mutation,
   Query,
   Resolver,
-  UseMiddleware,
-} from "type-graphql";
+  UseMiddleware
+} from 'type-graphql';
 
-import Blog from "../entities/Blog";
-import User from "../entities/User";
+import Blog from '../entities/Blog';
+import User from '../entities/User';
 // import { authChecker } from "../middleware/AuthChecker";
-import { isAuth } from "../middleware/isAuth";
-import { MyContext } from "../types/MyContext";
-import { makeId } from "../utils/helpers";
+import { isAuth } from '../middleware/isAuth';
+import { MyContext } from '../types/MyContext';
+import { makeId } from '../utils/helpers';
 
 @Resolver()
 export class BlogResolver {
@@ -26,13 +26,13 @@ export class BlogResolver {
   @Mutation(() => Blog)
   async createBlog(
     @Ctx() { payload }: MyContext,
-    @Arg("title") title: string,
-    @Arg("body") body: string,
-    @Arg("desc") desc?: string
+    @Arg('title') title: string,
+    @Arg('body') body: string,
+    @Arg('desc') desc?: string
   ) {
     const user = await User.findOne({ id: payload!.userId });
 
-    if (!user) throw new AuthenticationError("认证失败，请登录");
+    if (!user) throw new AuthenticationError('认证失败，请登录');
 
     try {
       const createdAt = new Date();
@@ -50,21 +50,17 @@ export class BlogResolver {
   @Mutation(() => Blog)
   async pubBlog(
     @Ctx() { payload }: MyContext,
-    @Arg("identifier") identifier: string
+    @Arg('identifier') identifier: string
   ) {
     const owner = await User.findOneOrFail({ id: payload?.userId });
-    if (!owner) throw new AuthenticationError("认证失败,无法编辑此文章");
+    if (!owner) throw new AuthenticationError('认证失败,无法编辑此文章');
     try {
-      let errors: any = {};
-      if (isEmpty(identifier)) errors.identifier = "请选择要更新的文章";
-      let blogToPub = await Blog.findOneOrFail({ identifier });
-      if (!blogToPub) throw new Error("未找到您要发布的文章，请重试");
+      const errors: any = {};
+      if (isEmpty(identifier)) errors.identifier = '请选择要更新的文章';
+      const blogToPub = await Blog.findOneOrFail({ identifier });
+      if (!blogToPub) throw new Error('未找到您要发布的文章，请重试');
       blogToPub.isPublished = true;
-      try {
-        await blogToPub.save();
-      } catch (err) {
-        throw err;
-      }
+      await blogToPub.save();
     } catch (err) {
       console.log(err);
       return err;
@@ -89,10 +85,10 @@ export class BlogResolver {
   @Query(() => [Blog])
   async getOwnBlogs(@Ctx() { payload }: MyContext) {
     const owner = await User.findOneOrFail({ id: payload?.userId });
-    if (!owner) throw new AuthenticationError("认证失败");
+    if (!owner) throw new AuthenticationError('认证失败');
     try {
       const blogs = await Blog.find({ where: { user: owner } });
-      if (!blogs) throw new Error("您还没有写过文章");
+      if (!blogs) throw new Error('您还没有写过文章');
       return blogs;
     } catch (err) {
       console.log(err);
@@ -106,22 +102,22 @@ export class BlogResolver {
   @Mutation(() => Blog)
   async updateBlog(
     @Ctx() { payload }: MyContext,
-    @Arg("identifier") identifier: string,
-    @Arg("newTitle") newTitle: string,
-    @Arg("newBody") newBody: string,
-    @Arg("newDesc") newDesc?: string
+    @Arg('identifier') identifier: string,
+    @Arg('newTitle') newTitle: string,
+    @Arg('newBody') newBody: string,
+    @Arg('newDesc') newDesc?: string
   ) {
     const owner = await User.findOneOrFail({ id: payload?.userId });
-    if (!owner) throw new AuthenticationError("认证失败,无法编辑此文章");
+    if (!owner) throw new AuthenticationError('认证失败,无法编辑此文章');
     try {
-      let errors: any = {};
-      if (isEmpty(identifier)) errors.oldName = "请选择要更新的文章";
-      if (isEmpty(newBody)) errors.newBody = "文章内容不得为空";
-      if (isEmpty(newTitle)) errors.newTitle = "文章标题不得为空";
-      if (isEmpty(newDesc)) errors.desc = "文章简介不得为空";
-      let blogToUpd = await Blog.findOneOrFail({ identifier });
+      const errors: any = {};
+      if (isEmpty(identifier)) errors.oldName = '请选择要更新的文章';
+      if (isEmpty(newBody)) errors.newBody = '文章内容不得为空';
+      if (isEmpty(newTitle)) errors.newTitle = '文章标题不得为空';
+      if (isEmpty(newDesc)) errors.desc = '文章简介不得为空';
+      const blogToUpd = await Blog.findOneOrFail({ identifier });
 
-      if (!blogToUpd) errors.title = "未找到文章";
+      if (!blogToUpd) errors.title = '未找到文章';
 
       blogToUpd!.title = newTitle;
       blogToUpd!.body = newBody;
@@ -138,16 +134,16 @@ export class BlogResolver {
   //删除文章
   @UseMiddleware(isAuth)
   @Mutation(() => Blog)
-  async deleteBlog(@Ctx() { payload }: MyContext, @Arg("id") id: number) {
+  async deleteBlog(@Ctx() { payload }: MyContext, @Arg('id') id: number) {
     const owner = await User.findOneOrFail({ id: payload?.userId });
-    if (!owner) throw new AuthenticationError("认证失败,没有权限删除文章");
+    if (!owner) throw new AuthenticationError('认证失败,没有权限删除文章');
 
     try {
-      let errors: any = {};
-      if (isEmpty(id)) errors.id = "请选择要删除的文章";
+      const errors: any = {};
+      if (isEmpty(id)) errors.id = '请选择要删除的文章';
 
-      let blogToDel = await Blog.findOneOrFail(id);
-      if (!blogToDel) errors.blog = "您要删除的文章不存在，请重新选择";
+      const blogToDel = await Blog.findOneOrFail(id);
+      if (!blogToDel) errors.blog = '您要删除的文章不存在，请重新选择';
       if (Object.keys(errors).length > 0) {
         throw errors;
       }
@@ -168,14 +164,14 @@ export class BlogResolver {
   @Mutation(() => String)
   async uploadBlogPic(
     @Ctx() { payload }: MyContext,
-    @Arg("identifier") identifier: string,
-    @Arg("filename") filename: string
+    @Arg('identifier') identifier: string,
+    @Arg('filename') filename: string
   ) {
     const user = await User.findOne({ id: payload!.userId });
 
-    if (!user) throw new AuthenticationError("认证失败");
-    let blog = await Blog.findOneOrFail(identifier);
-    if (!blog) throw new Error("未找到要上传图片的文章，请重试");
+    if (!user) throw new AuthenticationError('认证失败');
+    const blog = await Blog.findOneOrFail(identifier);
+    if (!blog) throw new Error('未找到要上传图片的文章，请重试');
     upload.single(filename);
     blog.imageUrn = `${process.env.BASE_URL}/uploads/blogs/${filename}`;
     await blog.save();
@@ -185,17 +181,17 @@ export class BlogResolver {
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: "uploads/blogs/",
+    destination: 'uploads/blogs/',
     filename: (_, __, callback) => {
       const name = makeId(15);
       callback(null, name + path.extname);
-    },
+    }
   }),
   fileFilter: (__, file: any, callback: FileFilterCallback) => {
-    if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
       callback(null, true);
     } else {
-      callback(new Error("无效的图片类型"));
+      callback(new Error('无效的图片类型'));
     }
-  },
+  }
 });

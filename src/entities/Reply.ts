@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType } from 'type-graphql';
 import {
   Entity as TOEntity,
   Column,
@@ -6,16 +6,16 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
-  BeforeInsert,
-} from "typeorm";
-import User from "./User";
-import Entity from "./Entity";
-import { MaxLength } from "class-validator";
-import { makeId } from "../utils/helpers";
-import Comment from "./Comment";
+  BeforeInsert
+} from 'typeorm';
+import User from './User';
+import Entity from './Entity';
+import { MaxLength } from 'class-validator';
+import { makeId } from '../utils/helpers';
+import Comment from './Comment';
 
 @ObjectType()
-@TOEntity("comments")
+@TOEntity('comments')
 export default class Reply extends Entity {
   constructor(reply: Partial<Reply>) {
     super();
@@ -24,12 +24,12 @@ export default class Reply extends Entity {
 
   @Field()
   @Index()
-  @Column("varchar", { unique: true })
+  @Column('varchar', { unique: true })
   identifier: string;
 
   @Field()
   @MaxLength(150)
-  @Column("text", { nullable: false })
+  @Column('text', { nullable: false })
   content: string;
 
   @Field()
@@ -37,7 +37,7 @@ export default class Reply extends Entity {
   username: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: "username", referencedColumnName: "username" })
+  @JoinColumn({ name: 'username', referencedColumnName: 'username' })
   user: User;
 
   //将要回复的评论
@@ -47,6 +47,6 @@ export default class Reply extends Entity {
 
   @BeforeInsert()
   makeId() {
-    this.identifier = "r-" + makeId(5);
+    this.identifier = 'r-' + makeId(5);
   }
 }

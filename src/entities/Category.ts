@@ -1,18 +1,18 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType } from 'type-graphql';
 import {
   Entity as TOEntity,
   Column,
   Index,
   ManyToOne,
   JoinColumn,
-  OneToMany,
-} from "typeorm";
-import Entity from "./Entity";
-import Blog from "./Blog";
-import User from "./User";
+  OneToMany
+} from 'typeorm';
+import Entity from './Entity';
+import Blog from './Blog';
+import User from './User';
 
 @ObjectType()
-@TOEntity("categories")
+@TOEntity('categories')
 export default class Category extends Entity {
   constructor(category: Partial<Category>) {
     super();
@@ -21,11 +21,11 @@ export default class Category extends Entity {
 
   @Field({ nullable: false })
   @Index()
-  @Column("text", { unique: true })
+  @Column('text', { unique: true })
   name: string;
 
   @Field({ nullable: true })
-  @Column("text", { nullable: true })
+  @Column('text', { nullable: true })
   desc?: string;
 
   @Field({ nullable: true })
@@ -33,11 +33,11 @@ export default class Category extends Entity {
   bannerUrn?: string;
 
   @Field({ nullable: false })
-  @Column("text", { name: "owner" })
+  @Column('text', { name: 'owner' })
   owner: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: "owner", referencedColumnName: "username" })
+  @JoinColumn({ name: 'owner', referencedColumnName: 'username' })
   user: User;
 
   @Field(() => [Blog])

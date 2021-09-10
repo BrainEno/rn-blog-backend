@@ -1,17 +1,17 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType } from 'type-graphql';
 import {
   BeforeInsert,
   Column,
   Entity as TOEntity,
   Index,
-  ManyToMany,
-} from "typeorm";
-import { slugify } from "../utils/helpers";
-import Blog from "./Blog";
-import Entity from "./Entity";
+  ManyToMany
+} from 'typeorm';
+import { slugify } from '../utils/helpers';
+import Blog from './Blog';
+import Entity from './Entity';
 
 @ObjectType()
-@TOEntity("tags")
+@TOEntity('tags')
 export default class Tag extends Entity {
   constructor(tag: Partial<Tag>) {
     super();
@@ -28,7 +28,7 @@ export default class Tag extends Entity {
 
   @Field()
   @Index()
-  @Column("text", { unique: true })
+  @Column('text', { unique: true })
   slug: string;
 
   @BeforeInsert()

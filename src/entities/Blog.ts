@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType } from 'type-graphql';
 import {
   Entity as TOEntity,
   Column,
@@ -7,20 +7,20 @@ import {
   JoinColumn,
   OneToMany,
   BeforeInsert,
-  ManyToMany,
-} from "typeorm";
-import Entity from "./Entity";
-import User from "./User";
-import Comment from "./Comment";
-import Vote from "./Vote";
-import { Exclude, Expose } from "class-transformer";
-import { makeId, slugify } from "../utils/helpers";
-import Tag from "./Tag";
-import Like from "./Like";
-import Category from "./Category";
+  ManyToMany
+} from 'typeorm';
+import Entity from './Entity';
+import User from './User';
+import Comment from './Comment';
+import Vote from './Vote';
+import { Exclude, Expose } from 'class-transformer';
+import { makeId, slugify } from '../utils/helpers';
+import Tag from './Tag';
+import Like from './Like';
+import Category from './Category';
 
 @ObjectType()
-@TOEntity("blogs")
+@TOEntity('blogs')
 export default class Blog extends Entity {
   constructor(blog: Partial<Blog>) {
     super();
@@ -29,24 +29,24 @@ export default class Blog extends Entity {
 
   @Field()
   @Index()
-  @Column("varchar", { unique: true })
+  @Column('varchar', { unique: true })
   identifier: string;
 
   @Field()
   @Index()
-  @Column("varchar", { unique: true })
+  @Column('varchar', { unique: true })
   slug: string;
 
   @Field()
-  @Column("text", { nullable: false })
+  @Column('text', { nullable: false })
   title: string;
 
   @Field()
-  @Column("text")
+  @Column('text')
   desc: string;
 
   @Field()
-  @Column("text", { nullable: false })
+  @Column('text', { nullable: false })
   body: string;
 
   @Field()
@@ -70,7 +70,7 @@ export default class Blog extends Entity {
   isPublished: boolean;
 
   @ManyToOne(() => User, (user) => user.blogs)
-  @JoinColumn({ name: "author", referencedColumnName: "username" })
+  @JoinColumn({ name: 'author', referencedColumnName: 'username' })
   user: User;
 
   @Exclude()

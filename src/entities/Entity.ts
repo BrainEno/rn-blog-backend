@@ -1,6 +1,6 @@
-import { PrimaryGeneratedColumn, BaseEntity, CreateDateColumn } from "typeorm";
-import { Exclude } from "class-transformer";
-import { Field } from "type-graphql";
+import { PrimaryGeneratedColumn, BaseEntity, CreateDateColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Field } from 'type-graphql';
 
 export default abstract class Entity extends BaseEntity {
   @Exclude()

@@ -1,17 +1,17 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType } from 'type-graphql';
 import {
   Entity as TOEntity,
   Column,
   ManyToOne,
   JoinColumn,
-  BeforeInsert,
-} from "typeorm";
-import { makeId } from "../utils/helpers";
-import Entity from "./Entity";
-import User from "./User";
+  BeforeInsert
+} from 'typeorm';
+import { makeId } from '../utils/helpers';
+import Entity from './Entity';
+import User from './User';
 
 @ObjectType()
-@TOEntity("messages")
+@TOEntity('messages')
 export default class Message extends Entity {
   constructor(message: Partial<Message>) {
     super();
@@ -19,21 +19,21 @@ export default class Message extends Entity {
   }
 
   @Field()
-  @Column("varchar")
+  @Column('varchar')
   identifier: string;
 
   @Field()
-  @Column("text")
+  @Column('text')
   content: string;
 
   @Field(() => User)
   @ManyToOne(() => User)
-  @JoinColumn({ name: "msgTo", referencedColumnName: "username" })
+  @JoinColumn({ name: 'msgTo', referencedColumnName: 'username' })
   to: User;
 
   @Field(() => User)
   @ManyToOne(() => User)
-  @JoinColumn({ name: "msgFrom", referencedColumnName: "username" })
+  @JoinColumn({ name: 'msgFrom', referencedColumnName: 'username' })
   from: User;
 
   @Field()
@@ -46,6 +46,6 @@ export default class Message extends Entity {
 
   @BeforeInsert()
   makeId() {
-    this.identifier = "m-" + makeId(5);
+    this.identifier = 'm-' + makeId(5);
   }
 }

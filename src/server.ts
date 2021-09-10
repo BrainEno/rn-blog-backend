@@ -1,43 +1,43 @@
-import dotenv from "dotenv";
-import "reflect-metadata";
-import express from "express";
-import morgan from "morgan";
-import { ApolloServer } from "apollo-server-express";
-import { createConnection } from "typeorm";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import { createSchema } from "./utils/createSchema";
-import { graphqlUploadExpress } from "graphql-upload";
-import { createServer } from "http";
-import { execute, subscribe } from "graphql";
-import { SubscriptionServer } from "subscriptions-transport-ws";
-import { upload, uploadAvatar, uploadPicture } from "./uploadPicture";
-import _ from "./sendRefreshToken";
+import dotenv from 'dotenv';
+import 'reflect-metadata';
+import express from 'express';
+// import morgan from "morgan";
+import { ApolloServer } from 'apollo-server-express';
+import { createConnection } from 'typeorm';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { createSchema } from './utils/createSchema';
+import { graphqlUploadExpress } from 'graphql-upload';
+import { createServer } from 'http';
+import { execute, subscribe } from 'graphql';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { upload, uploadAvatar, uploadPicture } from './uploadPicture';
+import _ from './sendRefreshToken';
 
 const bootstrap = async () => {
   dotenv.config();
   const PORT = process.env.PORT;
   const app = express();
 
-  app.use(morgan("dev") as any);
+  // app.use(morgan("dev") as any);
   app.use(cookieParser());
-  app.use(cors({ origin: "*" }));
-  app.use(express.static("./uploads"));
+  app.use(cors({ origin: '*' }));
+  app.use(express.static('./uploads'));
   app.use(graphqlUploadExpress());
-  app.get("/", (_req, res) => res.send("Hello world!"));
+  app.get('/', (_req, res) => res.send('Hello world!'));
   //上传用户头像
-  app.post("/upload/avatar", upload.single("file"), uploadAvatar);
+  app.post('/upload/avatar', upload.single('file'), uploadAvatar);
   //上传博客图片或类别图片
-  app.post("/upload/blog", upload.single("file"), uploadPicture);
-  app.post("/upload/category", upload.single("file"), uploadPicture);
+  app.post('/upload/blog', upload.single('file'), uploadPicture);
+  app.post('/upload/category', upload.single('file'), uploadPicture);
   //刷新token;
-  app.post("/refresh_token", _.sendRefreshTokenController);
+  app.post('/refresh_token', _.sendRefreshTokenController);
 
   const httpServer = createServer(app);
 
   try {
     await createConnection();
-    console.log("Database connected!");
+    console.log('Database connected!');
   } catch (err) {
     console.log(err);
   }
@@ -47,7 +47,7 @@ const bootstrap = async () => {
   const apolloServer = new ApolloServer({
     schema,
     context: ({ req, res }) => ({ req, res }),
-    introspection: true,
+    introspection: true
   });
 
   await apolloServer.start();
@@ -57,15 +57,15 @@ const bootstrap = async () => {
     {
       schema,
       execute,
-      subscribe,
+      subscribe
     },
     {
       server: httpServer,
-      path: apolloServer.graphqlPath,
+      path: apolloServer.graphqlPath
     }
   );
 
-  ["SIGINT", "SIGTERM"].forEach((signal) => {
+  ['SIGINT', 'SIGTERM'].forEach((signal) => {
     process.on(signal, () => subscriptionServer.close());
   });
 

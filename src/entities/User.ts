@@ -1,23 +1,23 @@
-import { Field, ObjectType } from "type-graphql";
-import { IsEmail, Length, MinLength } from "class-validator";
+import { Field, ObjectType } from 'type-graphql';
+import { IsEmail, Length, MinLength } from 'class-validator';
 import {
   Entity as TOEntity,
   Column,
   OneToMany,
   Index,
   JoinColumn,
-  BeforeInsert,
-} from "typeorm";
-import Blog from "./Blog";
-import Entity from "./Entity";
-import Vote from "./Vote";
-import Like from "./Like";
-import Comment from "./Comment";
-import Reply from "./Reply";
-import Roles from "../types/Roles";
+  BeforeInsert
+} from 'typeorm';
+import Blog from './Blog';
+import Entity from './Entity';
+import Vote from './Vote';
+import Like from './Like';
+import Comment from './Comment';
+import Reply from './Reply';
+import Roles from '../types/Roles';
 
 @ObjectType()
-@TOEntity("users")
+@TOEntity('users')
 export default class User extends Entity {
   constructor(user: Partial<User>) {
     super();
@@ -26,32 +26,32 @@ export default class User extends Entity {
 
   @Field()
   @Index()
-  @MinLength(1, { message: "用户名不能为空" })
-  @Column("text", { unique: true })
+  @MinLength(1, { message: '用户名不能为空' })
+  @Column('text', { unique: true })
   username: string;
 
   @Field()
   @Index()
-  @IsEmail(undefined, { message: "请填写有效的邮箱地址" })
-  @Length(1, 255, { message: "邮箱地址不能为空" })
-  @Column("text", { unique: true })
+  @IsEmail(undefined, { message: '请填写有效的邮箱地址' })
+  @Length(1, 255, { message: '邮箱地址不能为空' })
+  @Column('text', { unique: true })
   email: string;
 
-  @Column("text")
-  @MinLength(6, { message: "密码不能小于6个字符" })
+  @Column('text')
+  @MinLength(6, { message: '密码不能小于6个字符' })
   password: string;
 
-  @Column("varchar", { nullable: false, default: Roles.PASSAGER })
+  @Column('varchar', { nullable: false, default: Roles.PASSAGER })
   @Field(() => [Roles])
   roles: string;
 
-  @Column("varchar", {
+  @Column('varchar', {
     default:
-      "https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png",
+      'https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png'
   })
   @Field({
     defaultValue:
-      "https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png",
+      'https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png'
   })
   avatar: string;
 
@@ -66,8 +66,8 @@ export default class User extends Entity {
   @Field(() => [Like])
   @OneToMany(() => Like, (like) => like.user)
   @JoinColumn({
-    name: "likedBlogs",
-    referencedColumnName: "id",
+    name: 'likedBlogs',
+    referencedColumnName: 'id'
   })
   likes: Like[];
 
@@ -83,7 +83,7 @@ export default class User extends Entity {
   @Column({ nullable: true })
   likedBlogNum?: number;
 
-  @Column("int", { default: 0 })
+  @Column('int', { default: 0 })
   tokenVersion: number;
 
   @BeforeInsert()
