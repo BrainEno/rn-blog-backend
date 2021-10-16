@@ -13,6 +13,9 @@ import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { upload, uploadAvatar, uploadPicture } from './uploadPicture';
 import _ from './sendRefreshToken';
+import { PubSub } from 'graphql-subscriptions';
+
+export const pubsub = new PubSub();
 
 const bootstrap = async () => {
   dotenv.config();
@@ -30,7 +33,7 @@ const bootstrap = async () => {
   //上传博客图片或类别图片
   app.post('/upload/blog', upload.single('file'), uploadPicture);
   app.post('/upload/category', upload.single('file'), uploadPicture);
-  //刷新token;
+  //refresh_token;
   app.post('/refresh_token', _.sendRefreshTokenController);
 
   const httpServer = createServer(app);

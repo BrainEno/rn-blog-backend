@@ -8,7 +8,7 @@ import Blog from '../entities/Blog';
 import { isEmpty } from 'class-validator';
 
 @Resolver()
-export class CommentResolvers {
+export class CommentResolver {
   //添加评论
   @UseMiddleware(isAuth)
   @Mutation(() => Comment)

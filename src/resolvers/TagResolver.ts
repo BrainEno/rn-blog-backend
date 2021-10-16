@@ -1,5 +1,5 @@
-import { isAuth } from './../middleware/isAuth';
-import { MyContext } from './../types/MyContext';
+import { isAuth } from '../middleware/isAuth';
+import { MyContext } from '../types/MyContext';
 import { isEmpty } from 'class-validator';
 import {
   Arg,

@@ -1,10 +1,12 @@
-import { BlogResolver } from '../resolvers/BlogResolvers';
-import { CategoryResolver } from '../resolvers/CategoryResolvers';
-import { CommentResolvers } from '../resolvers/CommentResolvers';
-import { TagResolver } from '../resolvers/TagResolvers';
-import { UserResolver } from '../resolvers/UserResolvers';
+import { BlogResolver } from '../resolvers/BlogResolver';
+import { CategoryResolver } from '../resolvers/CategoryResolver';
+import { CommentResolver } from '../resolvers/CommentResolver';
+import { TagResolver } from '../resolvers/TagResolver';
+import { UserResolver } from '../resolvers/UserResolver';
 import { authChecker } from '../middleware/AuthChecker';
 import { buildSchema } from 'type-graphql';
+import { MessageResolver } from '../resolvers/MessageResolvers';
+import { NotificationResolver } from '../resolvers/NotificationResolver';
 
 export const createSchema = () =>
   buildSchema({
@@ -13,7 +15,9 @@ export const createSchema = () =>
       CategoryResolver,
       TagResolver,
       BlogResolver,
-      CommentResolvers
+      CommentResolver,
+      MessageResolver,
+      NotificationResolver
     ],
     authChecker
   });

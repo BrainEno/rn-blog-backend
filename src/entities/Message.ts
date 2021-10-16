@@ -49,3 +49,9 @@ export default class Message extends Entity {
     this.identifier = 'm-' + makeId(5);
   }
 }
+
+export interface MessagePayload {
+  identifier: string;
+  msgTo: string;
+  msgFrom: string;
+}

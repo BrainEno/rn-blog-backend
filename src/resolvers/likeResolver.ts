@@ -26,7 +26,7 @@ export class LikeResolver {
       if (like && like.isLiked !== 0) like.isLiked = 0;
       if (!like) {
         const blog = await Blog.findOneOrFail({ id: blogId });
-        if (!blog) throw new Error('无法收藏该文章，请重试');
+        if (!blog) throw new Error('无法找到该文章，请重试');
         newLike = new Like({
           isLiked,
           user,
