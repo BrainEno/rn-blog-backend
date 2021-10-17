@@ -13,10 +13,11 @@ import User from '../entities/User';
 import { MyContext } from '../types/MyContext';
 import { isAuth } from '../middleware/isAuth';
 import { createAccessToken, createRefreshToken } from '../auth';
-import _ from '../sendRefreshToken';
+import { sendRefreshtoken } from '../sendRefreshToken';
 import { getConnection } from 'typeorm';
 import { AuthenticationError } from 'apollo-server-errors';
 import Roles from '../types/Roles';
+import { isAdmin } from '../middleware/isAdmin';
 
 @ObjectType()
 class LoginResponse {
@@ -29,10 +30,11 @@ class LoginResponse {
 export class UserResolver {
   @Query(() => String)
   hello() {
-    return 'Welcome!';
+    return 'Welcome to React Native BOT THK!';
   }
 
   //查找所有用户
+  @UseMiddleware(isAdmin)
   @Query(() => [User])
   users() {
     return User.find();
@@ -44,7 +46,13 @@ export class UserResolver {
     @Arg('username') username: string,
     @Arg('email') email: string,
     @Arg('password') password: string
-  ) {
+  ): Promise<boolean> {
+    //验证邮箱是否已被注册
+    const exist = await User.findOne({ where: { email } });
+    if (exist) {
+      throw new AuthenticationError('该邮箱已被注册，请更换邮箱或找回密码');
+    }
+
     const hashedPassword = await hash(password, 12);
 
     try {
@@ -96,7 +104,7 @@ export class UserResolver {
     }
 
     //登录成功
-    _.sendRefreshtoken(res, createRefreshToken(user));
+    sendRefreshtoken(res, createRefreshToken(user));
 
     return {
       accessToken: createAccessToken(user),
@@ -107,7 +115,7 @@ export class UserResolver {
   //查看当前用户
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
-  async currentUser(@Ctx() { payload }: MyContext): Promise<User | null> {
+  async currUser(@Ctx() { payload }: MyContext): Promise<User | null> {
     const currentUser = await User.findOne({ id: payload!.userId });
 
     if (!currentUser) {

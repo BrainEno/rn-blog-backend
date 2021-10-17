@@ -12,7 +12,7 @@ import { createServer } from 'http';
 import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { upload, uploadAvatar, uploadPicture } from './uploadPicture';
-import _ from './sendRefreshToken';
+import { sendRefreshTokenController } from './sendRefreshToken';
 import { PubSub } from 'graphql-subscriptions';
 
 export const pubsub = new PubSub();
@@ -34,7 +34,7 @@ const bootstrap = async () => {
   app.post('/upload/blog', upload.single('file'), uploadPicture);
   app.post('/upload/category', upload.single('file'), uploadPicture);
   //refresh_token;
-  app.post('/refresh_token', _.sendRefreshTokenController);
+  app.post('/refresh_token', sendRefreshTokenController);
 
   const httpServer = createServer(app);
 

@@ -4,7 +4,6 @@ import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import {
   Arg,
-  Authorized,
   Ctx,
   Mutation,
   Query,
@@ -14,7 +13,6 @@ import {
 
 import Blog from '../entities/Blog';
 import User from '../entities/User';
-// import { authChecker } from "../middleware/AuthChecker";
 import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types/MyContext';
 import { makeId } from '../utils/helpers';
@@ -69,7 +67,7 @@ export class BlogResolver {
 
   //列出所有文章
   @Query(() => [Blog])
-  async listAllBlogs() {
+  async listAllBlogs(): Promise<Blog[]> {
     try {
       const blogs = await Blog.find();
       return blogs;
@@ -80,7 +78,6 @@ export class BlogResolver {
   }
 
   //列出自己的所有文章
-  @Authorized()
   @UseMiddleware(isAuth)
   @Query(() => [Blog])
   async getOwnBlogs(@Ctx() { payload }: MyContext) {
@@ -97,7 +94,6 @@ export class BlogResolver {
   }
 
   //更新文章
-  @Authorized()
   @UseMiddleware(isAuth)
   @Mutation(() => Blog)
   async updateBlog(

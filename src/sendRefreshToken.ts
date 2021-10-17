@@ -3,13 +3,16 @@ import { verify } from 'jsonwebtoken';
 import { createAccessToken, createRefreshToken } from './auth';
 import User from './entities/User';
 
-const sendRefreshtoken = (res: Response, token: string) => {
+export const sendRefreshtoken = (res: Response, token: string) => {
   res.cookie('bot', token, {
     httpOnly: true
   });
 };
 
-const sendRefreshTokenController = async (req: Request, res: Response) => {
+export const sendRefreshTokenController = async (
+  req: Request,
+  res: Response
+) => {
   const token = req.cookies.bot;
   if (!token) {
     return res.send({ ok: false, accessToken: '' });
@@ -39,6 +42,3 @@ const sendRefreshTokenController = async (req: Request, res: Response) => {
 
   return res.send({ ok: true, accessToken: createAccessToken(user) });
 };
-
-const _ = { sendRefreshTokenController, sendRefreshtoken };
-export default _;
