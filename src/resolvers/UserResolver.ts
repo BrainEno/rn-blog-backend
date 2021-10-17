@@ -36,7 +36,7 @@ export class UserResolver {
   //查找所有用户
   @UseMiddleware(isAdmin)
   @Query(() => [User])
-  users() {
+  users(): Promise<User[]> {
     return User.find();
   }
 
