@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import 'reflect-metadata';
 import express from 'express';
 // import morgan from "morgan";
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer, ExpressContext } from 'apollo-server-express';
 import { createConnection } from 'typeorm';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -13,9 +13,6 @@ import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { upload, uploadAvatar, uploadPicture } from './uploadPicture';
 import { sendRefreshTokenController } from './sendRefreshToken';
-import { PubSub } from 'graphql-subscriptions';
-
-export const pubsub = new PubSub();
 
 const bootstrap = async () => {
   dotenv.config();
@@ -49,7 +46,10 @@ const bootstrap = async () => {
 
   const apolloServer = new ApolloServer({
     schema,
-    context: ({ req, res }) => ({ req, res }),
+    context: ({ req, res }: ExpressContext) => ({
+      req,
+      res
+    }),
     introspection: true
   });
 

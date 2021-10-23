@@ -18,8 +18,8 @@ export default class Message extends Entity {
     Object.assign(this, message);
   }
 
-  @Field()
-  @Column('varchar')
+  @Field({ nullable: false })
+  @Column('varchar', { nullable: false })
   identifier: string;
 
   @Field()
@@ -54,4 +54,6 @@ export interface MessagePayload {
   identifier: string;
   msgTo: string;
   msgFrom: string;
+  content: string;
+  createdAt: Date;
 }

@@ -43,9 +43,9 @@ export class NotificationResolver {
   @Subscription(() => Notification, {
     topics: 'NOTIFICATIONS',
     filter: ({ payload }: ResolverFilterData<NotificationPayload>) =>
-      payload.id % 1 === 0
+      payload.id !== null
   })
-  subscriptionWithFilter(@Root() { id, message }: NotificationPayload) {
+  getNotification(@Root() { id, message }: NotificationPayload) {
     const newNotification: Notification = { id, message, date: new Date() };
     return newNotification;
   }

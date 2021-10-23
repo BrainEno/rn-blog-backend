@@ -19,7 +19,7 @@ import Roles from '../types/Roles';
 @ObjectType()
 @TOEntity('users')
 export default class User extends Entity {
-  constructor(user: Partial<User>) {
+  constructor(user: Required<Pick<User, 'id'>>) {
     super();
     Object.assign(this, user);
   }
@@ -80,7 +80,7 @@ export default class User extends Entity {
   replies: Reply[];
 
   @Field()
-  @Column({ nullable: true })
+  @Column('int', { nullable: true })
   likedBlogNum?: number;
 
   @Column('int', { default: 0 })

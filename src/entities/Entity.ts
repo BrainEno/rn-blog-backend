@@ -13,5 +13,5 @@ export default abstract class Entity extends BaseEntity {
 
   @CreateDateColumn()
   @Field()
-  updatedAt: Date;
+  updatedAt?: Date;
 }

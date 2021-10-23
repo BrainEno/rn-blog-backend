@@ -65,7 +65,7 @@ export default class Blog extends Entity {
   @Column()
   author: string;
 
-  @Field()
+  @Field({ defaultValue: false })
   @Column({ default: false })
   isPublished: boolean;
 
@@ -75,15 +75,15 @@ export default class Blog extends Entity {
 
   @Exclude()
   @OneToMany(() => Comment, (comment) => comment.blog)
-  comments: Comment[];
+  comments?: Comment[];
 
   @Exclude()
   @OneToMany(() => Vote, (vote) => vote.blog)
-  votes: Vote[];
+  votes?: Vote[];
 
   @Exclude()
   @OneToMany(() => Like, (like) => like.blog)
-  likes: Like[];
+  likes?: Like[];
 
   @Field()
   protected userVote: number;
@@ -91,7 +91,8 @@ export default class Blog extends Entity {
     const index = this.votes?.findIndex(
       (v): any => v.username === user.username
     );
-    this.userVote = index > -1 ? this.votes[index].value : 0;
+
+    this.userVote = index! > -1 ? this.votes![index!].value : 0;
   }
 
   @Field()
@@ -100,13 +101,13 @@ export default class Blog extends Entity {
     const index = this.likes?.findIndex(
       (l): any => l.username === user.username
     );
-    this.userLike = index > -1 ? this.likes[index].isLiked : 0;
+    this.userLike = index! > -1 ? this.likes![index!].isLiked : 0;
   }
 
   @Field({ defaultValue: 0 })
   @Expose()
   get commentCount(): number {
-    return this.comments?.length;
+    return this.comments!.length;
   }
 
   @Field({ defaultValue: 0 })

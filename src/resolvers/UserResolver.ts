@@ -48,7 +48,7 @@ export class UserResolver {
     @Arg('password') password: string
   ): Promise<boolean> {
     //验证邮箱是否已被注册
-    const exist = await User.findOne({ where: { email } });
+    const exist = await User.findOne({ where: { email }, select: ['id'] });
     if (exist) {
       throw new AuthenticationError('该邮箱已被注册，请更换邮箱或找回密码');
     }
@@ -123,5 +123,16 @@ export class UserResolver {
     } else {
       return currentUser;
     }
+  }
+
+  //退出登录
+  @Mutation(() => Boolean)
+  async logout(@Ctx() ctx: MyContext): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (!ctx.req.headers.authorization) reject(false);
+      ctx.req.headers.authorization = '';
+      ctx.res.clearCookie('bot');
+      return resolve(true);
+    });
   }
 }

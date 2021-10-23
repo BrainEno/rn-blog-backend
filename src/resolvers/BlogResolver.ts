@@ -1,4 +1,4 @@
-import { AuthenticationError } from 'apollo-server-errors';
+import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { isEmpty } from 'class-validator';
 import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
@@ -26,15 +26,28 @@ export class BlogResolver {
     @Ctx() { payload }: MyContext,
     @Arg('title') title: string,
     @Arg('body') body: string,
-    @Arg('desc') desc?: string
+    @Arg('isPublished') isPublished: boolean,
+    @Arg('imageUrn') imageUrn?: string
   ) {
-    const user = await User.findOne({ id: payload!.userId });
-
-    if (!user) throw new AuthenticationError('认证失败，请登录');
-
     try {
+      const user = await User.findOne({ id: payload!.userId });
+
+      if (!user) throw new AuthenticationError('认证失败，请登录');
+
+      if (body.trim() === '') throw new UserInputError('文章内容不得为空');
+      const desc = body.trim().slice(0, 45);
       const createdAt = new Date();
-      const blog = new Blog({ user, title, body, desc, createdAt });
+
+      const blog = new Blog({
+        user,
+        title,
+        body,
+        desc,
+        isPublished,
+        createdAt,
+        imageUrn
+      });
+
       await blog.save();
       return blog;
     } catch (error) {
@@ -101,7 +114,8 @@ export class BlogResolver {
     @Arg('identifier') identifier: string,
     @Arg('newTitle') newTitle: string,
     @Arg('newBody') newBody: string,
-    @Arg('newDesc') newDesc?: string
+    @Arg('newDesc') newDesc?: string,
+    @Arg('newImage') newImage?: string
   ) {
     const owner = await User.findOneOrFail({ id: payload?.userId });
     if (!owner) throw new AuthenticationError('认证失败,无法编辑此文章');
@@ -111,6 +125,7 @@ export class BlogResolver {
       if (isEmpty(newBody)) errors.newBody = '文章内容不得为空';
       if (isEmpty(newTitle)) errors.newTitle = '文章标题不得为空';
       if (isEmpty(newDesc)) errors.desc = '文章简介不得为空';
+      if (isEmpty(newImage)) errors.image = '请上传图片或输入图片链接';
       const blogToUpd = await Blog.findOneOrFail({ identifier });
 
       if (!blogToUpd) errors.title = '未找到文章';
@@ -118,7 +133,7 @@ export class BlogResolver {
       blogToUpd!.title = newTitle;
       blogToUpd!.body = newBody;
       blogToUpd!.desc = newDesc || newBody.trim().slice(0, 45);
-
+      if (newImage) blogToUpd!.imageUrn = newImage;
       await blogToUpd!.save();
       return blogToUpd;
     } catch (error) {
