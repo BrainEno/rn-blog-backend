@@ -18,8 +18,7 @@ import User from '../entities/User';
 import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types/MyContext';
 import { MessagePayload } from '../entities/Message';
-
-const NEW_MESSAGE = 'NEW_MESSAGE';
+import { Topic } from '../topics';
 
 @Resolver()
 export class MessageResolver {
@@ -61,7 +60,7 @@ export class MessageResolver {
   @Mutation(() => Message)
   async sendMessage(
     @Ctx() { payload }: MyContext,
-    @PubSub(NEW_MESSAGE) publish: Publisher<MessagePayload>,
+    @PubSub(Topic.NewMessage) publish: Publisher<MessagePayload>,
     @Arg('to') to: string,
     @Arg('content') content: string
   ) {
@@ -111,7 +110,7 @@ export class MessageResolver {
   }
 
   @Subscription(() => Message, {
-    topics: NEW_MESSAGE,
+    topics: Topic.NewMessage,
     filter: ({ payload }: ResolverFilterData<MessagePayload>) =>
       payload.content.trim() !== ''
   })

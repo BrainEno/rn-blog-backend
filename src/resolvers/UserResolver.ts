@@ -127,12 +127,14 @@ export class UserResolver {
 
   //退出登录
   @Mutation(() => Boolean)
-  async logout(@Ctx() ctx: MyContext): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (!ctx.req.headers.authorization) reject(false);
-      ctx.req.headers.authorization = '';
-      ctx.res.clearCookie('bot');
-      return resolve(true);
-    });
+  async logout(@Ctx() { req, res }: MyContext): Promise<boolean> {
+    if (req.headers.cookie) {
+      req.headers.authorization = '';
+      res.clearCookie('bot');
+
+      console.log(req.headers.authorization);
+      return true;
+    }
+    return false;
   }
 }

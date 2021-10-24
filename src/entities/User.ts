@@ -14,7 +14,7 @@ import Vote from './Vote';
 import Like from './Like';
 import Comment from './Comment';
 import Reply from './Reply';
-import Roles from '../types/Roles';
+import Role from '../types/Roles';
 
 @ObjectType()
 @TOEntity('users')
@@ -41,8 +41,8 @@ export default class User extends Entity {
   @MinLength(6, { message: '密码不能小于6个字符' })
   password: string;
 
-  @Column('varchar', { nullable: false, default: Roles.PASSAGER.toString() })
-  @Field(() => Roles, { defaultValue: Roles.PASSAGER })
+  @Column('varchar', { nullable: false, default: Role.AUTH_USER })
+  @Field(() => Role, { defaultValue: Role.AUTH_USER })
   userRole: string;
 
   @Column('varchar', {

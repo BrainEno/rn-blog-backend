@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import 'reflect-metadata';
 import express from 'express';
-// import morgan from "morgan";
 import { ApolloServer, ExpressContext } from 'apollo-server-express';
 import { createConnection } from 'typeorm';
 import cors from 'cors';
@@ -19,18 +18,18 @@ const bootstrap = async () => {
   const PORT = process.env.PORT;
   const app = express();
 
-  // app.use(morgan("dev") as any);
   app.use(cookieParser());
   app.use(cors({ origin: '*' }));
+
   app.use(express.static('./uploads'));
   app.use(graphqlUploadExpress());
-  app.get('/', (_req, res) => res.send('Hello world!'));
+  app.get('/', (_req, res) => res.send('Hello from React Native BOT THK!'));
   //上传用户头像
   app.post('/upload/avatar', upload.single('file'), uploadAvatar);
   //上传博客图片或类别图片
   app.post('/upload/blog', upload.single('file'), uploadPicture);
   app.post('/upload/category', upload.single('file'), uploadPicture);
-  //refresh_token;
+  //刷新令牌
   app.post('/refresh_token', sendRefreshTokenController);
 
   const httpServer = createServer(app);
@@ -54,7 +53,7 @@ const bootstrap = async () => {
   });
 
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app } as any);
+  apolloServer.applyMiddleware({ app, cors: false });
 
   const subscriptionServer = SubscriptionServer.create(
     {

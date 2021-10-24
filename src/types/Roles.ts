@@ -1,25 +1,25 @@
 import { registerEnumType } from 'type-graphql';
 
-enum Roles {
+enum Role {
   ADMIN = 'ADMIN',
   AUTH_USER = 'AUTH_USER',
   PASSAGER = 'PASSAGER'
 }
 
-registerEnumType(Roles, {
+registerEnumType(Role, {
   name: 'Roles',
-  description: 'user roles',
+  description: 'User Roles',
   valuesConfig: {
     ADMIN: {
-      description: 'Admin users'
+      description: 'Admin User'
     },
     AUTH_USER: {
-      description: 'Authenticated users'
+      description: 'Authenticated User'
     },
     PASSAGER: {
-      description: 'Unauthenticated users'
+      description: 'Unauthenticated User'
     }
   }
 });
 
-export default Roles;
+export default Role;

@@ -6,7 +6,7 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers['authorization'];
 
   if (!authorization) {
-    throw new Error('Not Authenticated User');
+    throw new Error('认证失败:authorization not found');
   }
 
   try {
@@ -16,7 +16,7 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
     context.payload = payload as any;
   } catch (err) {
     console.log(err);
-    throw new Error('Not Authenticated User');
+    throw new Error('认证失败');
   }
 
   return next();
