@@ -12,7 +12,6 @@
     "nodemon": "^2.0.12",
     "prettier": "^2.4.0",
     "rimraf": "^3.0.2",
-    "ts-node": "10.2.1",
     "typescript": "^4.4.2"
   },
   "dependencies": {
@@ -45,9 +44,11 @@
     "redis": "^3.1.2",
     "reflect-metadata": "^0.1.10",
     "subscriptions-transport-ws": "^0.9.19",
+    "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
     "type-graphql": "^1.1.1",
-    "typeorm": "^0.2.37"
+    "typeorm": "^0.2.37",
+    "typeorm-seeding": "^1.6.1"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production node build/server.js",
@@ -55,6 +56,7 @@
     "watch": "tsc --project tsconfig.json --watch",
     "build": "rimraf ./build && tsc --project tsconfig.json",
     "dev": "ts-node-dev src/server.ts",
+    "seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
     "lint": "eslint . --ext .ts",
     "lintfix": "eslint . --ext .ts --fix",
     "prettier-format": "prettier --config .prettierrc -w 'src/**/*.ts' "

@@ -1,4 +1,3 @@
-import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types/MyContext';
 import { isEmpty } from 'class-validator';
 import {
@@ -17,16 +16,18 @@ import { createWriteStream } from 'fs';
 import { File, UploadedFileResponse } from '../types/Upload';
 import { GraphQLUpload } from 'graphql-upload';
 import path from 'path';
+import { isAdmin } from '../middleware/isAdmin';
 
 @Resolver()
 export class CategoryResolver {
   //创建新类别
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAdmin)
   @Mutation(() => Category)
   async createCategory(
-    @Arg('name') name: string,
     @Ctx() { payload }: MyContext,
-    @Arg('desc') desc: string
+    @Arg('name') name: string,
+    @Arg('desc') desc: string,
+    @Arg('bannerUrn') bannerUrn: string
   ) {
     const user = await User.findOne({ id: payload!.userId });
 
@@ -51,7 +52,7 @@ export class CategoryResolver {
     }
 
     try {
-      const category = new Category({ user, name, desc });
+      const category = new Category({ name, desc, bannerUrn });
       await category.save();
       return category;
     } catch (err) {
@@ -85,29 +86,15 @@ export class CategoryResolver {
     }
   }
 
-  //根据创建人获取类别
-  @UseMiddleware(isAuth)
-  @Query(() => [Category])
-  async getOWnCategories(@Ctx() { payload }: MyContext) {
-    const owner = await User.findOneOrFail({ id: payload!.userId });
-    if (!owner) throw new AuthenticationError('认证失败');
-    try {
-      const categories = await Category.find({ where: { owner } });
-      if (categories) return categories;
-    } catch (err) {
-      console.log(err);
-      return err;
-    }
-  }
-
   //更新类别
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAdmin)
   @Mutation(() => Category)
   async updateCategory(
     @Ctx() { payload }: MyContext,
     @Arg('oldName') oldName: string,
     @Arg('newName') newName: string,
-    @Arg('desc') desc: string
+    @Arg('desc') desc: string,
+    @Arg('newBanner', { nullable: false }) newBanner?: string
   ) {
     const user = await User.findOneOrFail({ id: payload!.userId });
     if (!user) throw new AuthenticationError('认证失败');
@@ -127,6 +114,7 @@ export class CategoryResolver {
 
       catToUpd!.name = newName;
       catToUpd!.desc = desc;
+      if (newBanner) catToUpd.bannerUrn = newBanner;
 
       try {
         await catToUpd!.save();
@@ -143,7 +131,7 @@ export class CategoryResolver {
   }
 
   //上传图片
-  @UseMiddleware(isAuth)
+  @UseMiddleware(isAdmin)
   @Mutation(() => String)
   async uploadCatBanner(
     @Ctx() { payload }: MyContext,
@@ -152,7 +140,7 @@ export class CategoryResolver {
   ): Promise<UploadedFileResponse> {
     const user = await User.findOne({ id: payload!.userId });
 
-    if (!user) throw new AuthenticationError('认证失败');
+    if (!user) throw new AuthenticationError('仅管理员可进行该操作');
 
     const stream = createReadStream();
 
