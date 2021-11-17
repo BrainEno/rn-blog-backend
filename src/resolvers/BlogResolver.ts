@@ -10,12 +10,12 @@ import {
   Resolver,
   UseMiddleware
 } from 'type-graphql';
-
 import Blog from '../entities/Blog';
 import User from '../entities/User';
 import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types/MyContext';
 import { makeId } from '../utils/helpers';
+import { getCategories } from '../utils/getCategories';
 
 @Resolver()
 export class BlogResolver {
@@ -48,6 +48,10 @@ export class BlogResolver {
         imageUrn
       });
 
+      //默认所有文章初始分类到all
+      const { all } = await getCategories();
+      blog.categories = [all];
+
       await blog.save();
       return blog;
     } catch (error) {
@@ -69,7 +73,7 @@ export class BlogResolver {
       const errors: any = {};
       if (isEmpty(identifier)) errors.identifier = '请选择要更新的文章';
       const blogToPub = await Blog.findOneOrFail({ identifier });
-      if (!blogToPub) throw new Error('未找到您要发布的文章，请重试');
+      if (!blogToPub) throw new Error('未找到要发布的文章，请重试');
       blogToPub.isPublished = true;
       await blogToPub.save();
     } catch (err) {

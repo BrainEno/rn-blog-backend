@@ -7,7 +7,8 @@ import {
   JoinColumn,
   OneToMany,
   BeforeInsert,
-  ManyToMany
+  ManyToMany,
+  JoinTable
 } from 'typeorm';
 import Entity from './Entity';
 import User from './User';
@@ -55,6 +56,7 @@ export default class Blog extends Entity {
 
   @Field(() => [Tag])
   @ManyToMany(() => Tag, (tag) => tag.blogs)
+  @JoinTable()
   tags?: Tag[];
 
   @Field(() => [Category])

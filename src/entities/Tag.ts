@@ -28,7 +28,7 @@ export default class Tag extends Entity {
 
   @Field()
   @Index()
-  @Column('text', { unique: true })
+  @Column('varchar', { unique: true })
   slug: string;
 
   @BeforeInsert()
