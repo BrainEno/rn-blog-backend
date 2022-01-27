@@ -8,7 +8,9 @@ import {
   OneToMany,
   BeforeInsert,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  UpdateDateColumn,
+  CreateDateColumn
 } from 'typeorm';
 import Entity from './Entity';
 import User from './User';
@@ -33,6 +35,16 @@ export default class Blog extends Entity {
   @Column('varchar', { unique: true })
   identifier: string;
 
+  @CreateDateColumn()
+  @Field()
+  @Column()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  updatedAt?: Date;
+
   @Field()
   @Index()
   @Column('varchar', { unique: true })
@@ -50,9 +62,9 @@ export default class Blog extends Entity {
   @Column('text', { nullable: false })
   body: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
-  imageUrn: string;
+  imageUrn?: string;
 
   @Field(() => [Tag])
   @ManyToMany(() => Tag, (tag) => tag.blogs)
@@ -60,7 +72,7 @@ export default class Blog extends Entity {
   tags?: Tag[];
 
   @Field(() => [Category])
-  @ManyToMany(() => Category, (category) => category.blogs)
+  @ManyToMany(() => Category, (category) => category.blogs, { cascade: true })
   categories?: Category[];
 
   @Field()
@@ -109,7 +121,8 @@ export default class Blog extends Entity {
   @Field({ defaultValue: 0 })
   @Expose()
   get commentCount(): number {
-    return this.comments!.length;
+    if (this.comments) return this.comments!.length ? this.comments!.length : 0;
+    return 0;
   }
 
   @Field({ defaultValue: 0 })

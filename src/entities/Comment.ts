@@ -6,7 +6,9 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
-  BeforeInsert
+  BeforeInsert,
+  CreateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 import User from './User';
 import Blog from './Blog';
@@ -36,6 +38,14 @@ export default class Comment extends Entity {
   @Field()
   @Column({ nullable: false })
   username: string;
+
+  @CreateDateColumn({ nullable: true })
+  @Field()
+  createdAt?: Date;
+
+  @UpdateDateColumn({ nullable: true })
+  @Field()
+  updatedAt?: Date;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'username', referencedColumnName: 'username' })

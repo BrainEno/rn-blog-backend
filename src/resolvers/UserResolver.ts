@@ -3,8 +3,6 @@ import {
   Query,
   Mutation,
   Arg,
-  ObjectType,
-  Field,
   Ctx,
   UseMiddleware
 } from 'type-graphql';
@@ -13,18 +11,12 @@ import User from '../entities/User';
 import { MyContext } from '../types/MyContext';
 import { isAuth } from '../middleware/isAuth';
 import { createAccessToken, createRefreshToken } from '../auth';
-import { sendRefreshtoken } from '../sendRefreshToken';
+import { setRefreshtoken } from '../sendRefreshToken';
 import { getConnection } from 'typeorm';
 import { AuthenticationError } from 'apollo-server-errors';
 import Roles from '../types/Roles';
 import { isAdmin } from '../middleware/isAdmin';
-
-@ObjectType()
-class LoginResponse {
-  @Field()
-  accessToken: string;
-  user: User;
-}
+import LoginResponse from '../objectTypes/LoginResponse';
 
 @Resolver()
 export class UserResolver {
@@ -33,7 +25,7 @@ export class UserResolver {
     return 'Welcome to React Native BOT THK!';
   }
 
-  //查找所有用户
+  //仅管理员，查找所有用户
   @UseMiddleware(isAdmin)
   @Query(() => [User])
   users(): Promise<User[]> {
@@ -70,18 +62,6 @@ export class UserResolver {
     return true;
   }
 
-  //如有需要可通过增加token版本，来撤销refreshtoken
-  @Mutation(() => Boolean)
-  async revokeRefreshTokensForUser(
-    @Arg('userId', () => Number) userId: number
-  ) {
-    await getConnection()
-      .getRepository(User)
-      .increment({ id: userId }, 'tokenVersion', 1);
-
-    return true;
-  }
-
   //登录
   @Mutation(() => LoginResponse)
   async login(
@@ -103,8 +83,8 @@ export class UserResolver {
       throw new AuthenticationError('密码错误，请重新输入');
     }
 
-    //登录成功
-    sendRefreshtoken(res, createRefreshToken(user));
+    //登录成功,设置refresh token
+    setRefreshtoken(res, createRefreshToken(user));
 
     return {
       accessToken: createAccessToken(user),
@@ -116,7 +96,7 @@ export class UserResolver {
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
   async currUser(@Ctx() { payload }: MyContext): Promise<User | null> {
-    const currentUser = await User.findOne({ id: payload!.userId });
+    const currentUser = await User.findOneOrFail({ id: payload!.userId });
 
     if (!currentUser) {
       return null;
@@ -130,11 +110,23 @@ export class UserResolver {
   async logout(@Ctx() { req, res }: MyContext): Promise<boolean> {
     if (req.headers.cookie) {
       req.headers.authorization = '';
-      res.clearCookie('bot');
+      res.clearCookie('bot_refresh');
 
-      console.log(req.headers.authorization);
       return true;
     }
     return false;
+  }
+
+  //撤销refresh token，仅管理员
+  @UseMiddleware(isAdmin)
+  @Mutation(() => Boolean)
+  async revokeRefreshTokensForUser(
+    @Arg('userId', () => Number) userId: number
+  ) {
+    await getConnection()
+      .getRepository(User)
+      .increment({ id: userId }, 'tokenVersion', 1);
+
+    return true;
   }
 }

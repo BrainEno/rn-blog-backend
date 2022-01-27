@@ -10,7 +10,7 @@ export const createAccessToken = (user: User) => {
     },
     process.env.ACCESS_TOKEN_SECRET!,
     {
-      expiresIn: '15m' //15分钟过期
+      expiresIn: '15m'
     }
   );
 };

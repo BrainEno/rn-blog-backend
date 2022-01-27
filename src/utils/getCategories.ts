@@ -3,7 +3,7 @@ import Category from '../entities/Category';
 export const initCategories = async () => {
   const all = new Category({
     name: '全部文章',
-    identifier: 'All',
+    identifier: 'all',
     desc: '所有用户上传的全部文章，按时间顺序排列',
     bannerUrn:
       'https://res.cloudinary.com/hapmoniym/image/upload/v1601987038/img/pic3_f65bzg.jpg'
@@ -12,7 +12,7 @@ export const initCategories = async () => {
 
   const recent = new Category({
     name: '最近上传',
-    identifier: 'Recent Post',
+    identifier: 'recent',
     desc: '全部用户范围内最新上传的文章，按时间顺序排列',
     bannerUrn:
       'https://res.cloudinary.com/hapmoniym/image/upload/v1635177238/img/untitled_bgwa2h.jpg'
@@ -21,7 +21,7 @@ export const initCategories = async () => {
 
   const trending = new Category({
     name: '最多收藏',
-    identifier: 'Trending',
+    identifier: 'trending',
     desc: '最受喜爱的文章，按收藏数排列',
     bannerUrn:
       'https://res.cloudinary.com/hapmoniym/image/upload/v1606821628/img/trending_ykv0lv.png'
@@ -30,7 +30,7 @@ export const initCategories = async () => {
 
   const featured = new Category({
     name: '编辑精选',
-    identifier: 'Featured',
+    identifier: 'featured',
     desc: '编辑精选的文章，按个人爱好挑选',
     bannerUrn:
       'https://res.cloudinary.com/hapmoniym/image/upload/v1606821627/img/featured_pw1bzg.png'
@@ -46,13 +46,14 @@ export const getCategories = async (): Promise<{
   trending: Category;
   featured: Category;
 }> => {
-  const allExists = await Category.findOneOrFail({ identifier: 'All' });
+  const allExists = await Category.findOneOrFail({ identifier: 'all' });
   const rencExists = await Category.findOneOrFail({
-    identifier: 'Recent Post'
+    identifier: 'recent'
   });
-  const trenExists = await Category.findOneOrFail({ identifier: 'Trending' });
-  const featExists = await Category.findOneOrFail({ identifier: 'Featured' });
-  if (!allExists && rencExists && !trenExists && !featExists) {
+  const trenExists = await Category.findOneOrFail({ identifier: 'trending' });
+  const featExists = await Category.findOneOrFail({ identifier: 'featured' });
+
+  if (!allExists && !rencExists && !trenExists && !featExists) {
     return await initCategories();
   }
 

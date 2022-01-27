@@ -4,7 +4,9 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  BeforeInsert
+  BeforeInsert,
+  UpdateDateColumn,
+  CreateDateColumn
 } from 'typeorm';
 import { makeId } from '../utils/helpers';
 import Entity from './Entity';
@@ -48,6 +50,16 @@ export default class Message extends Entity {
   makeId() {
     this.identifier = 'm-' + makeId(5);
   }
+
+  @CreateDateColumn()
+  @Field()
+  @Column()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field()
+  @Column()
+  updatedAt: Date;
 }
 
 export interface MessagePayload {

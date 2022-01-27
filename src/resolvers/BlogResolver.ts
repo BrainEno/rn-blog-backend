@@ -1,5 +1,5 @@
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
-import { isEmpty } from 'class-validator';
+import { isEmpty, ValidationError } from 'class-validator';
 import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import {
@@ -16,6 +16,7 @@ import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types/MyContext';
 import { makeId } from '../utils/helpers';
 import { getCategories } from '../utils/getCategories';
+import { getRepository } from 'typeorm';
 
 @Resolver()
 export class BlogResolver {
@@ -27,7 +28,7 @@ export class BlogResolver {
     @Arg('title') title: string,
     @Arg('body') body: string,
     @Arg('isPublished') isPublished: boolean,
-    @Arg('imageUrn') imageUrn?: string
+    @Arg('imageUrn') imageUrn: string
   ) {
     try {
       const user = await User.findOne({ id: payload!.userId });
@@ -69,9 +70,10 @@ export class BlogResolver {
   ) {
     const owner = await User.findOneOrFail({ id: payload?.userId });
     if (!owner) throw new AuthenticationError('认证失败,无法编辑此文章');
+
     try {
       const errors: any = {};
-      if (isEmpty(identifier)) errors.identifier = '请选择要更新的文章';
+      if (isEmpty(identifier)) errors.identifier = '请选择要发布的文章';
       const blogToPub = await Blog.findOneOrFail({ identifier });
       if (!blogToPub) throw new Error('未找到要发布的文章，请重试');
       blogToPub.isPublished = true;
@@ -86,11 +88,36 @@ export class BlogResolver {
   @Query(() => [Blog])
   async listAllBlogs(): Promise<Blog[]> {
     try {
-      const blogs = await Blog.find();
+      const blogs = await getRepository(Blog)
+        .createQueryBuilder('blog')
+        .leftJoinAndSelect('blog.categories', 'category')
+        .cache(true)
+        .getMany();
+
       return blogs;
     } catch (err) {
       console.log(err);
       return err;
+    }
+  }
+
+  //根据slug获取文章内容
+  @Query(() => Blog)
+  async getBlogBySlug(@Arg('slug') slug: string): Promise<Blog | null> {
+    try {
+      if (isEmpty(slug)) throw new ValidationError();
+      const blog = await getRepository(Blog)
+        .createQueryBuilder('blog')
+        .where('blog.slug=:slug', { slug })
+        .leftJoinAndSelect('blog.categories', 'category')
+        .cache(true)
+        .getOne();
+
+      if (blog) return blog;
+      return null;
+    } catch (error) {
+      console.log(error);
+      return error.message;
     }
   }
 

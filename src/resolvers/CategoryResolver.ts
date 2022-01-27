@@ -40,6 +40,7 @@ export class CategoryResolver {
       const isCategory = await getRepository(Category)
         .createQueryBuilder('category')
         .where('lower(category.name)=:name', { name: name.toLowerCase() })
+        .cache(true)
         .getOne();
 
       if (isCategory) errors.name = '该类名已存在';
@@ -63,9 +64,11 @@ export class CategoryResolver {
 
   //获得所有类别
   @Query(() => [Category])
-  async listAllCategories() {
+  async listAllCategories(): Promise<Category[]> {
     try {
-      const categories = await Category.find();
+      const categories = await Category.find({
+        select: ['name', 'identifier']
+      });
       return categories;
     } catch (err) {
       console.log(err);
@@ -73,12 +76,31 @@ export class CategoryResolver {
     }
   }
 
+  //根据类名获取类别及下属的博客
+  @Query(() => Category)
+  async getCatWithBlogs(
+    @Arg('identifier') identifier: string
+  ): Promise<Category> {
+    if (isEmpty(identifier)) throw new UserInputError('类名不得为空');
+
+    try {
+      const cat = await getRepository(Category)
+        .createQueryBuilder('category')
+        .where('category.identifier=:identifier', { identifier })
+        .leftJoinAndSelect('category.blogs', 'blog')
+        .getOneOrFail();
+      return cat;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
   //根据类名获得特定类别
   @Query(() => Category)
-  async getCategoryByName(@Arg('name') name: string) {
-    if (isEmpty(name)) throw new UserInputError('类名不得为空');
+  async getCategoryByName(@Arg('name') name: string): Promise<Category> {
     try {
-      const category = await Category.findOne({ name });
+      const category = await Category.findOneOrFail({ name });
       return category;
     } catch (err) {
       console.log(err);

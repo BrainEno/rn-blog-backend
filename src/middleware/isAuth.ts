@@ -6,16 +6,15 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers['authorization'];
 
   if (!authorization) {
-    throw new Error('认证失败:authorization not found');
+    throw new Error('认证失败:未设置Authorization');
   }
 
   try {
     const token = authorization.split(' ')[1];
-    // console.log(token);
     const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
     context.payload = payload as any;
   } catch (err) {
-    console.log(err);
+    console.log('verify error', err);
     throw new Error('认证失败');
   }
 

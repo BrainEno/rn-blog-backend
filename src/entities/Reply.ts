@@ -6,7 +6,9 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
-  BeforeInsert
+  BeforeInsert,
+  CreateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 import User from './User';
 import Entity from './Entity';
@@ -39,6 +41,16 @@ export default class Reply extends Entity {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'username', referencedColumnName: 'username' })
   user: User;
+
+  @CreateDateColumn()
+  @Field()
+  @Column()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field()
+  @Column()
+  updatedAt: Date;
 
   //将要回复的评论
   @Field(() => Comment)

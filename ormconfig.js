@@ -8,6 +8,7 @@ const port = parseInt(process.env.DB_PORT);
 module.exports =
   process.env.NODE_ENV === 'development'
     ? {
+        name: 'default',
         type: 'postgres',
         host: process.env.DB_HOST,
         port,

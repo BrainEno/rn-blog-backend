@@ -23,7 +23,6 @@ export default class Category extends Entity {
   @Column('varchar', { unique: true })
   name: string;
 
-  //默认为英文
   @Field({ nullable: false })
   @Index()
   @Column('varchar', { unique: true })
@@ -38,7 +37,7 @@ export default class Category extends Entity {
   @Column({ nullable: true, default: '' })
   bannerUrn?: string;
 
-  @Field(() => [Blog])
+  @Field(() => [Blog], { nullable: true })
   @ManyToMany(() => Blog, (blog) => blog.categories)
   @JoinTable()
   blogs?: Blog[];

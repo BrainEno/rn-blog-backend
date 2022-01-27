@@ -35,8 +35,8 @@ const bootstrap = async () => {
   const httpServer = createServer(app);
 
   try {
-    await createConnection();
-    console.log('Database connected!');
+    const connection = await createConnection('default');
+    console.log(connection.name, 'Database connected!');
   } catch (err) {
     console.log(err);
   }
@@ -53,6 +53,7 @@ const bootstrap = async () => {
   });
 
   await apolloServer.start();
+
   apolloServer.applyMiddleware({ app, cors: false });
 
   const subscriptionServer = SubscriptionServer.create(

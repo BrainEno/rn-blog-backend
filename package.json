@@ -16,7 +16,7 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.7",
     "typeorm-seeding": "^1.6.1",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.4"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -60,8 +60,8 @@
     "build": "rimraf ./build && tsc --project tsconfig.json",
     "dev": "ts-node-dev src/server.ts",
     "seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "lint": "eslint . --ext .ts",
-    "lintfix": "eslint . --ext .ts --fix",
+    "lint": "eslint . --ext .ts ./src",
+    "lintfix": "eslint . --ext .ts ./src --fix",
     "prettier-format": "prettier --config .prettierrc -w 'src/**/*.ts' "
   },
   "main": "server.js",

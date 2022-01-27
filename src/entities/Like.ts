@@ -1,5 +1,12 @@
 import { Field, ObjectType } from 'type-graphql';
-import { Entity as TOEntity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity as TOEntity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn
+} from 'typeorm';
 import Entity from './Entity';
 import Blog from './Blog';
 import User from './User';
@@ -29,4 +36,14 @@ export default class Like extends Entity {
   @Field(() => Blog)
   @ManyToOne(() => Blog)
   blog: Blog;
+
+  @CreateDateColumn()
+  @Field()
+  @Column()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field()
+  @Column()
+  updatedAt: Date;
 }
