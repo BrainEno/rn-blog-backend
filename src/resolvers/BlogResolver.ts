@@ -17,6 +17,7 @@ import { MyContext } from '../types/MyContext';
 import { makeId } from '../utils/helpers';
 import { getCategories } from '../utils/getCategories';
 import { getRepository } from 'typeorm';
+import cloudinary from 'cloudinary';
 
 @Resolver()
 export class BlogResolver {
@@ -199,6 +200,61 @@ export class BlogResolver {
       console.log(err);
       return err;
     }
+  }
+
+  //搜索文章
+  @Query(() => [Blog])
+  async searchBlog(@Arg('keyword') keyword: string) {
+    try {
+      const blogs = await getRepository(Blog)
+        .createQueryBuilder('blog')
+        .select('blog.title', 'title')
+        .where('blog.title like :keyword', {
+          keyword: `%${keyword}%`
+        })
+        .orWhere('blog.desc like :keyword', { keyword: `%${keyword}%` })
+        .orWhere('blog.author like :keyword', { keyword: `%${keyword}%` })
+        .getMany();
+
+      if (!blogs) throw new Error('没有找到相关文章');
+      return blogs;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  //删除cloudinary图片
+  @UseMiddleware(isAuth)
+  @Mutation(() => Boolean)
+  async deleteCloudinaryImage(@Arg('cloudinaryUrl') cloudinaryUrl: string) {
+    cloudinary.v2.config({
+      cloud_name: process.env.CLOUD_NAME,
+      api_key: process.env.API_KEY,
+      api_secret: process.env.API_SECRET
+    });
+
+    try {
+      if (isEmpty(cloudinaryUrl)) throw new ValidationError();
+      const blog = await Blog.findOne({ imageUrn: cloudinaryUrl });
+      if (blog) {
+        blog.imageUrn = '';
+        await blog.save();
+      }
+
+      const cloudinaryId = cloudinaryUrl.slice(
+        cloudinaryUrl.lastIndexOf('/bot-thk') + 1,
+        cloudinaryUrl.lastIndexOf('.')
+      );
+      console.log(cloudinaryId);
+      const deleted = await cloudinary.v2.uploader.destroy(cloudinaryId);
+
+      if (deleted.result === 'ok') return true;
+      return false;
+    } catch (err) {
+      console.log(err);
+    }
+    return false;
   }
 
   //上传博客图片
