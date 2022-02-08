@@ -16,7 +16,7 @@ import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types/MyContext';
 import { makeId } from '../utils/helpers';
 import { getCategories } from '../utils/getCategories';
-import { getRepository } from 'typeorm';
+import { Brackets, getRepository } from 'typeorm';
 import cloudinary from 'cloudinary';
 
 @Resolver()
@@ -39,6 +39,10 @@ export class BlogResolver {
       if (body.trim() === '') throw new UserInputError('文章内容不得为空');
       const desc = body.trim().slice(0, 45);
       const createdAt = new Date();
+
+      imageUrn = isEmpty(imageUrn)
+        ? 'https://res.cloudinary.com/hapmoniym/image/upload/v1644331126/bot-thk/no-image_eaeuge.jpg'
+        : imageUrn;
 
       const blog = new Blog({
         user,
@@ -96,6 +100,35 @@ export class BlogResolver {
         .getMany();
 
       return blogs;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  //列出相关文章
+  @Query(() => [Blog])
+  async relatedBlogs(
+    @Arg('author') author: string,
+    @Arg('identifier') identifier: string
+  ): Promise<Blog[]> {
+    try {
+      const related = await getRepository(Blog)
+        .createQueryBuilder('blog')
+        .where('blog.isPublished=:isPublished', { isPublished: true })
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where('blog.author=:author', { author }).andWhere(
+              'blog.identifier!=:identifier',
+              { identifier }
+            );
+          })
+        )
+        .orderBy('blog.createdAt', 'DESC')
+        .limit(3)
+        .cache(true)
+        .getMany();
+      return related;
     } catch (err) {
       console.log(err);
       return err;
@@ -208,12 +241,18 @@ export class BlogResolver {
     try {
       const blogs = await getRepository(Blog)
         .createQueryBuilder('blog')
-        .select('blog.title', 'title')
-        .where('blog.title like :keyword', {
+        .where('LOWER(blog.title) like LOWER(:keyword)', {
           keyword: `%${keyword}%`
         })
-        .orWhere('blog.desc like :keyword', { keyword: `%${keyword}%` })
-        .orWhere('blog.author like :keyword', { keyword: `%${keyword}%` })
+        .orWhere('LOWER(blog.desc) like LOWER(:keyword)', {
+          keyword: `%${keyword}%`
+        })
+        .orWhere('LOWER(blog.author) like LOWER(:keyword)', {
+          keyword: `%${keyword}%`
+        })
+        .orWhere('LOWER(blog.body) like LOWER(:keyword)', {
+          keyword: `%${keyword}%`
+        })
         .getMany();
 
       if (!blogs) throw new Error('没有找到相关文章');
@@ -238,7 +277,8 @@ export class BlogResolver {
       if (isEmpty(cloudinaryUrl)) throw new ValidationError();
       const blog = await Blog.findOne({ imageUrn: cloudinaryUrl });
       if (blog) {
-        blog.imageUrn = '';
+        blog.imageUrn =
+          'https://res.cloudinary.com/hapmoniym/image/upload/v1644331126/bot-thk/no-image_eaeuge.jpg';
         await blog.save();
       }
 
