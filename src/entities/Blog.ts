@@ -79,11 +79,22 @@ export default class Blog extends Entity {
   @Column()
   author: string;
 
+  @Field()
+  @Column({
+    default:
+      'https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png',
+    nullable: true
+  })
+  authorAvatar?: string;
+
   @Field({ defaultValue: false })
   @Column({ default: false })
   isPublished: boolean;
 
-  @ManyToOne(() => User, (user) => user.blogs)
+  @ManyToOne(() => User, (user) => user.blogs, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   @JoinColumn({ name: 'author', referencedColumnName: 'username' })
   user: User;
 
@@ -141,6 +152,12 @@ export default class Blog extends Entity {
       (prev: any, curr: any) => prev + (curr.isLiked || 0),
       0
     );
+  }
+
+  setAvatar(user: User) {
+    this.authorAvatar =
+      user.avatar ||
+      'https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png';
   }
 
   @BeforeInsert()

@@ -54,6 +54,8 @@ export class BlogResolver {
         imageUrn
       });
 
+      blog.setAvatar(user);
+
       //默认所有文章初始分类到all
       const { all } = await getCategories();
       blog.categories = [all];
@@ -115,6 +117,7 @@ export class BlogResolver {
     try {
       const related = await getRepository(Blog)
         .createQueryBuilder('blog')
+        .select('authorAvatar')
         .where('blog.isPublished=:isPublished', { isPublished: true })
         .andWhere(
           new Brackets((qb) => {
@@ -124,6 +127,7 @@ export class BlogResolver {
             );
           })
         )
+        .innerJoin('blog.author.avatar', 'authorAvatar')
         .orderBy('blog.createdAt', 'DESC')
         .limit(3)
         .cache(true)
@@ -199,6 +203,7 @@ export class BlogResolver {
       blogToUpd!.body = newBody;
       blogToUpd!.desc = newDesc || newBody.trim().slice(0, 45);
       if (newImage) blogToUpd!.imageUrn = newImage;
+      blogToUpd.setAvatar(owner);
       await blogToUpd!.save();
       return blogToUpd;
     } catch (error) {

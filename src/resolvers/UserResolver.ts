@@ -12,11 +12,12 @@ import { MyContext } from '../types/MyContext';
 import { isAuth } from '../middleware/isAuth';
 import { createAccessToken, createRefreshToken } from '../auth';
 import { setRefreshtoken } from '../sendRefreshToken';
-import { getConnection } from 'typeorm';
+import { getConnection, getRepository } from 'typeorm';
 import { AuthenticationError } from 'apollo-server-errors';
 import Roles from '../types/Roles';
 import { isAdmin } from '../middleware/isAdmin';
 import LoginResponse from '../objectTypes/LoginResponse';
+import { isEmpty } from 'class-validator';
 
 @Resolver()
 export class UserResolver {
@@ -56,7 +57,7 @@ export class UserResolver {
       });
     } catch (err) {
       console.log(err);
-      return false;
+      return err;
     }
 
     return true;
@@ -128,5 +129,64 @@ export class UserResolver {
       .increment({ id: userId }, 'tokenVersion', 1);
 
     return true;
+  }
+
+  //关注用户
+  @UseMiddleware(isAuth)
+  @Mutation(() => Boolean)
+  async follow(@Ctx() { payload }: MyContext, @Arg('userId') userId: number) {
+    if (isEmpty(userId)) throw new Error('该用户不存在');
+    try {
+      const curUser = await User.findOneOrFail({ id: payload.userId });
+      if (!curUser) throw new AuthenticationError('登录过期,请重新登录');
+      const toFollow = await User.findOneOrFail({ id: userId });
+      if (!toFollow) throw new Error('该用户不存在或已注销');
+
+      const userRepository = getRepository(User);
+
+      if (!curUser.followings) curUser.followings = [];
+      if (!toFollow.followers) toFollow.followers = [];
+
+      curUser.followings.push(toFollow);
+      toFollow.followers.push(curUser);
+
+      curUser.addFollowingId(toFollow.id.toString());
+      toFollow.addFollowerId(curUser.id.toString());
+
+      await userRepository.save(curUser);
+      await userRepository.save(toFollow);
+      return true;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+
+  //列出已关注者ID
+  @UseMiddleware(isAuth)
+  @Query(() => String)
+  async listFollowing(@Ctx() { payload }: MyContext) {
+    console.log(payload.userId);
+    const curUser = await User.findOne({
+      where: { id: payload.userId }
+    });
+
+    if (!curUser) throw new AuthenticationError('登录过期,请重新登录');
+
+    return curUser.followingIds;
+  }
+
+  //列出被关注者Id
+  @UseMiddleware(isAuth)
+  @Query(() => String)
+  async listFollower(@Ctx() { payload }: MyContext) {
+    console.log(payload.userId);
+    const curUser = await User.findOne({
+      where: { id: payload.userId }
+    });
+
+    if (!curUser) throw new AuthenticationError('登录过期,请重新登录');
+
+    return curUser.followerIds;
   }
 }

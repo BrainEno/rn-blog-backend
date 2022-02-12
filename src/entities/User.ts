@@ -6,7 +6,9 @@ import {
   OneToMany,
   Index,
   JoinColumn,
-  BeforeInsert
+  BeforeInsert,
+  ManyToMany,
+  JoinTable
 } from 'typeorm';
 import Blog from './Blog';
 import Entity from './Entity';
@@ -79,15 +81,56 @@ export default class User extends Entity {
   @OneToMany(() => Reply, (reply) => reply.user)
   replies: Reply[];
 
-  @Field()
-  @Column('int', { nullable: true })
-  likedBlogNum?: number;
+  @Field({ defaultValue: 0 })
+  @Column('int', { default: 0 })
+  likedBlogNum: number;
 
   @Column('int', { default: 0 })
   tokenVersion: number;
 
+  @Field(() => [User])
+  @ManyToMany(() => User, (user) => user.followers, {
+    cascade: true
+  })
+  @JoinTable()
+  followings: User[];
+
+  @Field(() => [User])
+  @ManyToMany(() => User, (user) => user.followings)
+  followers: User[];
+
+  @Column({ default: '' })
+  @Field(() => String, { defaultValue: '' })
+  followingIds: string;
+
+  @Column({ default: '' })
+  @Field(() => String, { defaultValue: '' })
+  followerIds: string;
+
   @BeforeInsert()
-  getLikedBlogNum() {
+  setLikedBlogNum() {
+    if (!this.likedBlogNum) this.likedBlogNum = 0;
     this.likedBlogNum = this.likes.length;
+  }
+
+  addFollowingId(newFollowingId: string) {
+    if (!this.followingIds) this.followingIds = '';
+    const followingsArr =
+      this.followingIds === '' ? [] : this.followingIds.split(',');
+
+    if (!followingsArr.includes(newFollowingId))
+      followingsArr.push(newFollowingId);
+
+    this.followingIds = followingsArr.join(',');
+  }
+
+  addFollowerId(newFollowerId: string) {
+    if (!this.followerIds) this.followerIds = '';
+    const followersArr =
+      this.followerIds === '' ? [] : this.followerIds.split(',');
+
+    if (!followersArr.includes(newFollowerId)) followersArr.push(newFollowerId);
+
+    this.followerIds = followersArr.join(',');
   }
 }
