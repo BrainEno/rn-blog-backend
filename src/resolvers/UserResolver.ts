@@ -166,7 +166,6 @@ export class UserResolver {
   @UseMiddleware(isAuth)
   @Query(() => String)
   async listFollowing(@Ctx() { payload }: MyContext) {
-    console.log(payload.userId);
     const curUser = await User.findOne({
       where: { id: payload.userId }
     });
@@ -180,7 +179,6 @@ export class UserResolver {
   @UseMiddleware(isAuth)
   @Query(() => String)
   async listFollower(@Ctx() { payload }: MyContext) {
-    console.log(payload.userId);
     const curUser = await User.findOne({
       where: { id: payload.userId }
     });

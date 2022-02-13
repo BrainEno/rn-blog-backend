@@ -6,9 +6,11 @@ import {
   OneToMany,
   Index,
   JoinColumn,
-  BeforeInsert,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  AfterUpdate,
+  AfterRemove,
+  AfterInsert
 } from 'typeorm';
 import Blog from './Blog';
 import Entity from './Entity';
@@ -68,10 +70,14 @@ export default class User extends Entity {
   @Field(() => [Like])
   @OneToMany(() => Like, (like) => like.user)
   @JoinColumn({
-    name: 'likedBlogs',
+    name: 'likedBlogIds',
     referencedColumnName: 'id'
   })
   likes: Like[];
+
+  @Column({ default: '' })
+  @Field(() => String, { defaultValue: '' })
+  likedBlogIds: string;
 
   @Field(() => [Comment])
   @OneToMany(() => Comment, (comment) => comment.user)
@@ -92,7 +98,10 @@ export default class User extends Entity {
   @ManyToMany(() => User, (user) => user.followers, {
     cascade: true
   })
-  @JoinTable()
+  @JoinTable({
+    joinColumn: { name: 'follower', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'following', referencedColumnName: 'id' }
+  })
   followings: User[];
 
   @Field(() => [User])
@@ -107,10 +116,12 @@ export default class User extends Entity {
   @Field(() => String, { defaultValue: '' })
   followerIds: string;
 
-  @BeforeInsert()
+  @AfterInsert()
+  @AfterUpdate()
+  @AfterRemove()
   setLikedBlogNum() {
     if (!this.likedBlogNum) this.likedBlogNum = 0;
-    this.likedBlogNum = this.likes.length;
+    this.likedBlogNum = this.likedBlogIds.length;
   }
 
   addFollowingId(newFollowingId: string) {
