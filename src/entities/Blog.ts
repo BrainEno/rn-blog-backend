@@ -10,7 +10,8 @@ import {
   ManyToMany,
   JoinTable,
   UpdateDateColumn,
-  CreateDateColumn
+  CreateDateColumn,
+  AfterUpdate
 } from 'typeorm';
 import Entity from './Entity';
 import User from './User';
@@ -68,8 +69,16 @@ export default class Blog extends Entity {
 
   @Field(() => [Tag])
   @ManyToMany(() => Tag, (tag) => tag.blogs)
-  @JoinTable()
+  @JoinTable({
+    name: 'blog_tags',
+    joinColumn: { name: 'blog_identifier', referencedColumnName: 'identifier' },
+    inverseJoinColumn: { name: 'tag_name', referencedColumnName: 'name' }
+  })
   tags?: Tag[];
+
+  @Field(() => String)
+  @Column('varchar', { default: '' })
+  tagNames: string;
 
   @Field(() => [Category])
   @ManyToMany(() => Category, (category) => category.blogs, { cascade: true })
@@ -139,7 +148,8 @@ export default class Blog extends Entity {
   @Field({ defaultValue: 0 })
   @Expose()
   get voteScore(): number {
-    return this.votes?.reduce(
+    if (!this.votes) return 0;
+    return this.votes.reduce(
       (prev: any, curr: any) => prev + (curr.value || 0),
       0
     );
@@ -154,10 +164,24 @@ export default class Blog extends Entity {
     );
   }
 
+  @AfterUpdate()
   setAvatar(user: User) {
     this.authorAvatar =
       user.avatar ||
       'https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png';
+  }
+
+  @AfterUpdate()
+  async addTag(tag: Tag) {
+    if (!this.tags) {
+      this.tags = [];
+    }
+    if (!this.tags.includes(tag)) {
+      this.tags.push(tag);
+      await this.save();
+      this.tagNames = this.tags.map((t) => t.name).join(',');
+      await this.save();
+    }
   }
 
   @BeforeInsert()

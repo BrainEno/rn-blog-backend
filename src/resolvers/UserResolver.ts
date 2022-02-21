@@ -13,11 +13,12 @@ import { isAuth } from '../middleware/isAuth';
 import { createAccessToken, createRefreshToken } from '../auth';
 import { setRefreshtoken } from '../sendRefreshToken';
 import { getConnection, getRepository } from 'typeorm';
-import { AuthenticationError } from 'apollo-server-errors';
+import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import Roles from '../types/Roles';
 import { isAdmin } from '../middleware/isAdmin';
 import LoginResponse from '../objectTypes/LoginResponse';
-import { isEmpty } from 'class-validator';
+import { isEmpty, isNotEmpty } from 'class-validator';
+import cloudinary from 'cloudinary';
 
 @Resolver()
 export class UserResolver {
@@ -186,5 +187,53 @@ export class UserResolver {
     if (!curUser) throw new AuthenticationError('登录过期,请重新登录');
 
     return curUser.followerIds;
+  }
+
+  //更改头像
+  @UseMiddleware(isAuth)
+  @Mutation(() => Boolean)
+  async changeAvatar(
+    @Ctx() { payload }: MyContext,
+    @Arg('avatarUrl') avatarUrl: string
+  ) {
+    cloudinary.v2.config({
+      cloud_name: process.env.CLOUD_NAME,
+      api_key: process.env.API_KEY,
+      api_secret: process.env.API_SECRET
+    });
+
+    try {
+      if (isEmpty(avatarUrl))
+        throw new UserInputError('头像链接无效，请重新上传');
+      const user = await User.findOne({
+        where: { id: payload.userId }
+      });
+
+      if (user) {
+        const prevUrl = user.avatar;
+        const cloudinaryId =
+          prevUrl.lastIndexOf('/bot-thk') !== -1 &&
+          prevUrl.lastIndexOf('.') !== -1
+            ? prevUrl.slice(
+                prevUrl.lastIndexOf('/bot-thk') + 1,
+                prevUrl.lastIndexOf('.')
+              )
+            : '';
+
+        user.avatar = avatarUrl;
+        await user.save();
+
+        if (isNotEmpty(cloudinaryId)) {
+          await cloudinary.v2.uploader.destroy(cloudinaryId);
+        }
+
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log('ERROR: ', error);
+      return false;
+    }
   }
 }

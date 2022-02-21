@@ -18,6 +18,7 @@ import { makeId } from '../utils/helpers';
 import { getCategories } from '../utils/getCategories';
 import { Brackets, getRepository } from 'typeorm';
 import cloudinary from 'cloudinary';
+import Tag from '../entities/Tag';
 
 @Resolver()
 export class BlogResolver {
@@ -117,7 +118,6 @@ export class BlogResolver {
     try {
       const related = await getRepository(Blog)
         .createQueryBuilder('blog')
-        .select('authorAvatar')
         .where('blog.isPublished=:isPublished', { isPublished: true })
         .andWhere(
           new Brackets((qb) => {
@@ -127,7 +127,6 @@ export class BlogResolver {
             );
           })
         )
-        .innerJoin('blog.author.avatar', 'authorAvatar')
         .orderBy('blog.createdAt', 'DESC')
         .limit(3)
         .cache(true)
@@ -212,6 +211,37 @@ export class BlogResolver {
     }
   }
 
+  //为文章添加标签
+  @UseMiddleware(isAuth)
+  @Mutation(() => Blog)
+  async addTagToBlog(
+    @Ctx() { payload }: MyContext,
+    @Arg('tagName') tagName: string,
+    @Arg('blogIdentifier') blogIdentifier: string
+  ) {
+    const owner = await User.findOneOrFail({ id: payload?.userId });
+    if (!owner) throw new AuthenticationError('认证失败,无法编辑此文章');
+
+    try {
+      const blogToUpd = await Blog.findOneOrFail({
+        identifier: blogIdentifier
+      });
+      if (!blogToUpd) throw new Error('未找到文章');
+
+      let tagToAdd = await Tag.findOne({ name: tagName });
+
+      if (!tagToAdd) tagToAdd = await Tag.create({ name: tagName }).save();
+
+      blogToUpd.tags = blogToUpd.tags || [];
+      blogToUpd.addTag(tagToAdd);
+
+      return blogToUpd;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
   //删除文章
   @UseMiddleware(isAuth)
   @Mutation(() => Blog)
@@ -279,27 +309,29 @@ export class BlogResolver {
     });
 
     try {
-      if (isEmpty(cloudinaryUrl)) throw new ValidationError();
-      const blog = await Blog.findOne({ imageUrn: cloudinaryUrl });
-      if (blog) {
-        blog.imageUrn =
-          'https://res.cloudinary.com/hapmoniym/image/upload/v1644331126/bot-thk/no-image_eaeuge.jpg';
-        await blog.save();
+      if (!isEmpty(cloudinaryUrl)) {
+        const blog = await Blog.findOne({ imageUrn: cloudinaryUrl });
+        if (blog) {
+          blog.imageUrn =
+            'https://res.cloudinary.com/hapmoniym/image/upload/v1644331126/bot-thk/no-image_eaeuge.jpg';
+          await blog.save();
+        }
+
+        const cloudinaryId = cloudinaryUrl.slice(
+          cloudinaryUrl.lastIndexOf('/bot-thk') + 1,
+          cloudinaryUrl.lastIndexOf('.')
+        );
+
+        const deleted = await cloudinary.v2.uploader.destroy(cloudinaryId);
+
+        if (deleted.result === 'ok') return true;
       }
 
-      const cloudinaryId = cloudinaryUrl.slice(
-        cloudinaryUrl.lastIndexOf('/bot-thk') + 1,
-        cloudinaryUrl.lastIndexOf('.')
-      );
-      console.log(cloudinaryId);
-      const deleted = await cloudinary.v2.uploader.destroy(cloudinaryId);
-
-      if (deleted.result === 'ok') return true;
       return false;
     } catch (err) {
       console.log(err);
+      return false;
     }
-    return false;
   }
 
   //上传博客图片

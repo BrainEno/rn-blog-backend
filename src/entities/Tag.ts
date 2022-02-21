@@ -19,7 +19,7 @@ export default class Tag extends Entity {
   }
 
   @Field()
-  @Column()
+  @Column({ unique: true, nullable: false })
   name: string;
 
   @Field(() => [Blog])
@@ -28,7 +28,7 @@ export default class Tag extends Entity {
 
   @Field()
   @Index()
-  @Column('varchar', { unique: true })
+  @Column('varchar', { unique: true, nullable: false })
   slug: string;
 
   @BeforeInsert()
