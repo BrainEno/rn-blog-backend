@@ -22,7 +22,7 @@ export const sendRefreshTokenController = async (
   }
 
   // 如果refresh token有效, 发送access token
-  const user = await User.findOne({ id: payload.userId });
+  const user = await User.findOneByOrFail({ id: payload.userId });
 
   if (!user) {
     return res.send({ ok: false, accessToken: '' });

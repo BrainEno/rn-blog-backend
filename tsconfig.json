@@ -26,10 +26,10 @@
     "types": []
   },
   "exclude": [
-    "./node_modules",
-    "./node_modules/*",
-    "./node_modules/@types/node/index.d.ts",
-    "ormconfig.js"
+    "node_modules",
+    "node_modules/*",
+    "node_modules/@types/node/index.d.ts",
+    "AppDataSource.ts"
   ],
-  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
+  "include": ["src/**/*.tsx", "src/**/*.ts"]
 }

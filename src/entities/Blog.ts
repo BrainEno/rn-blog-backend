@@ -11,7 +11,7 @@ import {
   JoinTable,
   UpdateDateColumn,
   CreateDateColumn,
-  AfterUpdate
+  BeforeUpdate
 } from 'typeorm';
 import Entity from './Entity';
 import User from './User';
@@ -26,11 +26,6 @@ import Category from './Category';
 @ObjectType()
 @TOEntity('blogs')
 export default class Blog extends Entity {
-  constructor(blog: Partial<Blog>) {
-    super();
-    Object.assign(this, blog);
-  }
-
   @Field()
   @Index()
   @Column('varchar', { unique: true })
@@ -96,6 +91,10 @@ export default class Blog extends Entity {
   })
   authorAvatar?: string;
 
+  @Field()
+  @Column({ default: -1 })
+  authorId: number;
+
   @Field({ defaultValue: false })
   @Column({ default: false })
   isPublished: boolean;
@@ -119,35 +118,27 @@ export default class Blog extends Entity {
   @OneToMany(() => Like, (like) => like.blog)
   likes?: Like[];
 
-  @Field()
-  protected userVote: number;
-  setUserVote(user: User) {
-    const index = this.votes?.findIndex(
-      (v): any => v.username === user.username
-    );
+  @Column('varchar', { default: '' })
+  @Field(() => String, { defaultValue: '' })
+  likedBy: string;
 
-    this.userVote = index! > -1 ? this.votes![index!].value : 0;
-  }
-
-  @Field()
-  protected userLike: number;
-  setUserLike(user: User) {
-    const index = this.likes?.findIndex(
-      (l): any => l.username === user.username
-    );
-    this.userLike = index! > -1 ? this.likes![index!].isLiked : 0;
+  setlikedBy(user: User = this.user): void {
+    const likedByArr = this.likedBy ? this.likedBy.split(',') : [];
+    if (!likedByArr.includes(user.username)) {
+      likedByArr.push(user.username);
+      this.likedBy = likedByArr.join(',');
+    }
   }
 
   @Field({ defaultValue: 0 })
   @Expose()
   get commentCount(): number {
-    if (this.comments) return this.comments!.length ? this.comments!.length : 0;
-    return 0;
+    return this.comments && this.comments.length ? this.comments!.length : 0;
   }
 
   @Field({ defaultValue: 0 })
   @Expose()
-  get voteScore(): number {
+  public get voteScore(): number {
     if (!this.votes) return 0;
     return this.votes.reduce(
       (prev: any, curr: any) => prev + (curr.value || 0),
@@ -157,21 +148,29 @@ export default class Blog extends Entity {
 
   @Field({ defaultValue: 0 })
   @Expose()
-  get likesCount(): number {
-    return this.likes?.reduce(
-      (prev: any, curr: any) => prev + (curr.isLiked || 0),
-      0
-    );
+  public get likesCount(): number {
+    if (this.likes) return this.likes.length;
+    return 0;
   }
 
-  @AfterUpdate()
+  async getComments(blogIdentifier: string) {
+    const comments = await Comment.findBy({ blog_identifier: blogIdentifier });
+    this.comments = comments;
+    await this.save();
+    return comments;
+  }
+
   setAvatar(user: User) {
-    this.authorAvatar =
-      user.avatar ||
-      'https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png';
+    user && user.avatar
+      ? (this.authorAvatar = user.avatar)
+      : (this.authorAvatar =
+          'https://res.cloudinary.com/hapmoniym/image/upload/v1608712074/icons/avatar_w5us1g.png');
   }
 
-  @AfterUpdate()
+  setAuthorId(user: User) {
+    user && user.id ? (this.authorId = user.id) : (this.authorId = -1);
+  }
+
   async addTag(tag: Tag) {
     if (!this.tags) {
       this.tags = [];
@@ -182,6 +181,11 @@ export default class Blog extends Entity {
       this.tagNames = this.tags.map((t) => t.name).join(',');
       await this.save();
     }
+  }
+
+  @BeforeUpdate()
+  updateDates() {
+    this.updatedAt = new Date();
   }
 
   @BeforeInsert()

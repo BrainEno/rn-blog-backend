@@ -86,7 +86,7 @@ export class MessageResolver {
         throw new UserInputError('信息内容不得为空');
       }
 
-      const message = new Message({
+      const message = Message.create({
         msgFrom: currUser.username,
         msgTo: to,
         content

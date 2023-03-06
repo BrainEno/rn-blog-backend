@@ -1,5 +1,17 @@
 import { ObjectType, Field } from 'type-graphql';
-import User from '../entities/User';
+
+
+@ObjectType()
+export class UserInfo{
+  @Field(() => String)
+  username: string;
+
+  @Field(() => String)
+  userRole: string;
+
+  @Field(() => String)
+  avatar: string;
+}
 
 @ObjectType()
 export default class LoginResponse {
@@ -7,5 +19,5 @@ export default class LoginResponse {
   accessToken: string;
 
   @Field()
-  user: User;
+  user: UserInfo;
 }

@@ -8,11 +8,6 @@ import User from './User';
 @ObjectType()
 @TOEntity('votes')
 export default class Vote extends Entity {
-  constructor(vote: Partial<Vote>) {
-    super();
-    Object.assign(this, vote);
-  }
-
   @Field()
   @Column('int')
   value: number;

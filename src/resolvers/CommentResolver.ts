@@ -17,16 +17,16 @@ export class CommentResolver {
     @Arg('content') content: string,
     @Ctx() { payload }: MyContext
   ) {
-    const user = await User.findOne({ id: payload!.userId });
+    const user = await User.findOneBy({ id: payload!.userId });
     if (!user) throw new AuthenticationError('认证失败');
 
-    const blog = await Blog.findOneOrFail({ identifier: blogIdentifier });
+    const blog = await Blog.findOneByOrFail({ identifier: blogIdentifier });
     if (!blog) throw new Error('不可评论该文章，请重试');
 
     if (isEmpty(content)) throw new Error('评论内容不得为空');
 
     try {
-      const comment = new Comment({ content, blog, user });
+      const comment = Comment.create({ content, blog, user });
       await comment.save();
       return comment;
     } catch (err) {
@@ -43,10 +43,10 @@ export class CommentResolver {
     @Arg('identifier') identifier: string,
     @Arg('newContent') newContent: string
   ) {
-    const user = await User.findOne({ id: payload!.userId });
+    const user = await User.findOneBy({ id: payload!.userId });
     if (!user) throw new AuthenticationError('认证失败');
 
-    const commentToEdt = await Comment.findOneOrFail({ identifier });
+    const commentToEdt = await Comment.findOneByOrFail({ identifier });
     if (!commentToEdt) throw new Error('无法编辑该评论，请重试');
 
     if (isEmpty(newContent)) throw new Error('输入内容不得为空');
@@ -69,10 +69,10 @@ export class CommentResolver {
     @Arg('identifier') identifier: string,
     @Ctx() { payload }: MyContext
   ) {
-    const user = await User.findOne({ id: payload!.userId });
+    const user = await User.findOneBy({ id: payload!.userId });
     if (!user) throw new AuthenticationError('认证失败');
 
-    const commentToRm = await Comment.findOneOrFail({ identifier });
+    const commentToRm = await Comment.findOneByOrFail({ identifier });
     if (!commentToRm) throw new Error('无法删除该评论，请重试');
 
     try {

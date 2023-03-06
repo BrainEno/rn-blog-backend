@@ -13,11 +13,6 @@ import Entity from './Entity';
 @ObjectType()
 @TOEntity('tags')
 export default class Tag extends Entity {
-  constructor(tag: Partial<Tag>) {
-    super();
-    Object.assign(this, tag);
-  }
-
   @Field()
   @Column({ unique: true, nullable: false })
   name: string;

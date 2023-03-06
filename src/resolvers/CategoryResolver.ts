@@ -8,18 +8,24 @@ import {
   Resolver,
   UseMiddleware
 } from 'type-graphql';
-import { getRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import User from '../entities/User';
 import Category from '../entities/Category';
 import { AuthenticationError, UserInputError } from 'apollo-server-express';
-import { createWriteStream } from 'fs';
-import { File, UploadedFileResponse } from '../types/Upload';
-import { GraphQLUpload } from 'graphql-upload';
-import path from 'path';
+// import { createWriteStream } from 'fs';
+// import { File, UploadedFileResponse } from '../types/Upload';
+// import { GraphQLUpload } from 'graphql-upload';
+// import path from 'path';
 import { isAdmin } from '../middleware/isAdmin';
+import { AppDataSource } from '../../AppDataSource';
 
 @Resolver()
 export class CategoryResolver {
+  catRepository: Repository<Category>;
+  constructor() {
+    this.catRepository = AppDataSource.getRepository(Category);
+  }
+
   //创建新类别
   @UseMiddleware(isAdmin)
   @Mutation(() => Category)
@@ -29,7 +35,7 @@ export class CategoryResolver {
     @Arg('desc') desc: string,
     @Arg('bannerUrn') bannerUrn: string
   ) {
-    const user = await User.findOne({ id: payload!.userId });
+    const user = await User.findOneByOrFail({ id: payload!.userId });
 
     if (!user) throw new AuthenticationError('认证失败');
 
@@ -37,7 +43,7 @@ export class CategoryResolver {
       const errors: any = {};
       if (isEmpty(name)) errors.name = '类名不得为空';
 
-      const isCategory = await getRepository(Category)
+      const isCategory = await this.catRepository
         .createQueryBuilder('category')
         .where('lower(category.name)=:name', { name: name.toLowerCase() })
         .cache(true)
@@ -66,7 +72,7 @@ export class CategoryResolver {
   @Query(() => [Category])
   async listAllCategories(): Promise<Category[]> {
     try {
-      const categories = await Category.find({
+      const categories = this.catRepository.find({
         select: ['name', 'identifier']
       });
       return categories;
@@ -84,7 +90,7 @@ export class CategoryResolver {
     if (isEmpty(identifier)) throw new UserInputError('类名不得为空');
 
     try {
-      const cat = await getRepository(Category)
+      const cat = await this.catRepository
         .createQueryBuilder('category')
         .where('category.identifier=:identifier', { identifier })
         .leftJoinAndSelect('category.blogs', 'blog')
@@ -100,7 +106,7 @@ export class CategoryResolver {
   @Query(() => Category)
   async getCategoryByName(@Arg('name') name: string): Promise<Category> {
     try {
-      const category = await Category.findOneOrFail({ name });
+      const category = await this.catRepository.findOneByOrFail({ name });
       return category;
     } catch (err) {
       console.log(err);
@@ -118,7 +124,7 @@ export class CategoryResolver {
     @Arg('desc') desc: string,
     @Arg('newBanner', { nullable: false }) newBanner?: string
   ) {
-    const user = await User.findOneOrFail({ id: payload!.userId });
+    const user = await User.findOneByOrFail({ id: payload!.userId });
     if (!user) throw new AuthenticationError('认证失败');
     try {
       const errors: any = {};
@@ -128,7 +134,9 @@ export class CategoryResolver {
 
       if (Object.keys(errors).length > 0) throw errors;
 
-      const catToUpd = await Category.findOneOrFail({ name: oldName });
+      const catToUpd = await this.catRepository.findOneByOrFail({
+        name: oldName
+      });
 
       if (!catToUpd) errors.name = '您要更新的类名不存在，请直接创建';
 
@@ -153,31 +161,33 @@ export class CategoryResolver {
   }
 
   //上传图片
-  @UseMiddleware(isAdmin)
-  @Mutation(() => String)
-  async uploadCatBanner(
-    @Ctx() { payload }: MyContext,
-    @Arg('catName') cateName: string,
-    @Arg('file', () => GraphQLUpload) { createReadStream, filename }: File
-  ): Promise<UploadedFileResponse> {
-    const user = await User.findOne({ id: payload!.userId });
+  //   @UseMiddleware(isAdmin)
+  //   @Mutation(() => String)
+  //   async uploadCatBanner(
+  //     @Ctx() { payload }: MyContext,
+  //     @Arg('catName') cateName: string,
+  //     @Arg('file', () => GraphQLUpload) { createReadStream, filename }: File
+  //   ): Promise<UploadedFileResponse> {
+  //     const user = await User.findOneByOrFail({ id: payload!.userId });
 
-    if (!user) throw new AuthenticationError('仅管理员可进行该操作');
+  //     if (!user) throw new AuthenticationError('仅管理员可进行该操作');
 
-    const stream = createReadStream();
+  //     const stream = createReadStream();
 
-    await stream.pipe(
-      createWriteStream(
-        path.join(__dirname, `/../../../uploads/categories/${filename}`)
-      )
-    );
+  //     await stream.pipe(
+  //       createWriteStream(
+  //         path.join(__dirname, `/../../../uploads/categories/${filename}`)
+  //       )
+  //     );
 
-    const category = await Category.findOneOrFail({ name: cateName });
-    if (!category) throw new Error('未找到要上传封面的话题，请重试');
-    category.bannerUrn = `${process.env.BASE_URL}/uploads/categories/${filename}`;
-    await category.save();
-    return {
-      url: `${process.env.BABEL_ENV}/uploads/categories/${filename}`
-    };
-  }
+  //     const category = await this.catRepository.findOneByOrFail({
+  //       name: cateName
+  //     });
+  //     if (!category) throw new Error('未找到要上传封面的话题，请重试');
+  //     category.bannerUrn = `${process.env.BASE_URL}/uploads/categories/${filename}`;
+  //     await category.save();
+  //     return {
+  //       url: `${process.env.BABEL_ENV}/uploads/categories/${filename}`
+  //     };
+  //   }
 }

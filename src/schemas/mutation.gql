@@ -1,0 +1,67 @@
+mutation Register(
+  $registerPassword: String!
+  $registerEmail: String!
+  $registerUsername: String!
+) {
+  register(
+    password: $registerPassword
+    email: $registerEmail
+    username: $registerUsername
+  )
+}
+
+mutation Login($password: String!, $email: String!) {
+  login(password: $password, email: $email) {
+    accessToken
+    user {
+      username
+      userRole
+      avatar
+    }
+  }
+}
+
+mutation Logout {
+  logout
+}
+
+#blogs
+
+mutation CreateBlog(
+  $imageUrn: String!
+  $isPublished: Boolean!
+  $body: String!
+  $title: String!
+) {
+  createBlog(
+    imageUrn: $imageUrn
+    isPublished: $isPublished
+    body: $body
+    title: $title
+  ) {
+    identifier
+    slug
+    title
+    body
+    imageUrn
+    isPublished
+    author
+  }
+}
+
+mutation PubBlog($identifier: String!) {
+  pubBlog(identifier: $identifier) {
+    identifier
+    slug
+    title
+    desc
+    body
+    imageUrn
+    author
+    isPublished
+  }
+}
+
+mutation DeleteCloudinaryImage($cloudinaryUrl: String!) {
+  deleteCloudinaryImage(cloudinaryUrl: $cloudinaryUrl)
+}

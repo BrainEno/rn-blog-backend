@@ -5,12 +5,8 @@ import {
   Column,
   OneToMany,
   Index,
-  JoinColumn,
   ManyToMany,
-  JoinTable,
-  AfterUpdate,
-  AfterRemove,
-  AfterInsert
+  JoinTable
 } from 'typeorm';
 import Blog from './Blog';
 import Entity from './Entity';
@@ -19,15 +15,11 @@ import Like from './Like';
 import Comment from './Comment';
 import Reply from './Reply';
 import Role from '../types/Roles';
+import { Expose } from 'class-transformer';
 
 @ObjectType()
 @TOEntity('users')
 export default class User extends Entity {
-  constructor(user: Required<Pick<User, 'id'>>) {
-    super();
-    Object.assign(this, user);
-  }
-
   @Field()
   @Index()
   @MinLength(1, { message: '用户名不能为空' })
@@ -69,15 +61,15 @@ export default class User extends Entity {
 
   @Field(() => [Like])
   @OneToMany(() => Like, (like) => like.user)
-  @JoinColumn({
-    name: 'likedBlogIds',
-    referencedColumnName: 'id'
-  })
   likes: Like[];
 
-  @Column({ default: '' })
-  @Field(() => String, { defaultValue: '' })
-  likedBlogIds: string;
+  @Field(() => [Blog], { defaultValue: '' })
+  @Expose()
+  get likedBlogs(): Blog[] {
+    return this.likes
+      ? this.likes.filter((like) => like.isLiked === 1).map((like) => like.blog)
+      : [];
+  }
 
   @Field(() => [Comment])
   @OneToMany(() => Comment, (comment) => comment.user)
@@ -87,9 +79,11 @@ export default class User extends Entity {
   @OneToMany(() => Reply, (reply) => reply.user)
   replies: Reply[];
 
-  @Field({ defaultValue: 0 })
-  @Column('int', { default: 0 })
-  likedBlogNum: number;
+  @Field(() => Number, { defaultValue: 0 })
+  @Expose()
+  get likedBlogNum() {
+    return this.likedBlogs.length;
+  }
 
   @Column('int', { default: 0 })
   tokenVersion: number;
@@ -115,14 +109,6 @@ export default class User extends Entity {
   @Column({ default: '' })
   @Field(() => String, { defaultValue: '' })
   followerIds: string;
-
-  @AfterInsert()
-  @AfterUpdate()
-  @AfterRemove()
-  setLikedBlogNum() {
-    if (!this.likedBlogNum) this.likedBlogNum = 0;
-    this.likedBlogNum = this.likedBlogIds.length;
-  }
 
   addFollowingId(newFollowingId: string) {
     if (!this.followingIds) this.followingIds = '';

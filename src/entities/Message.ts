@@ -15,11 +15,6 @@ import User from './User';
 @ObjectType()
 @TOEntity('messages')
 export default class Message extends Entity {
-  constructor(message: Partial<Message>) {
-    super();
-    Object.assign(this, message);
-  }
-
   @Field({ nullable: false })
   @Column('varchar', { nullable: false })
   identifier: string;

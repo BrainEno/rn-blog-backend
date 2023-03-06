@@ -1,0 +1,89 @@
+query CurrUser {
+  currUser {
+    username
+    email
+    userRole
+    avatar
+  }
+}
+
+#blog
+query GetBlogBySlug($slug: String!) {
+  getBlogBySlug(slug: $slug) {
+    identifier
+    createdAt
+    slug
+    title
+    desc
+    body
+    imageUrn
+    author
+    isPublished
+    commentCount
+    voteScore
+    likesCount
+  }
+}
+
+query GetCatWithBlogs($getCatWithBlogsIdentifier: String!) {
+  getCatWithBlogs(identifier: $getCatWithBlogsIdentifier) {
+     name
+      identifier
+      desc
+      bannerUrn
+      blogs {
+        identifier
+        createdAt
+        updatedAt
+        author
+        slug
+        title
+        desc
+        body
+        imageUrn
+        isPublished
+        commentCount
+        voteScore
+        likesCount
+      }
+  }
+}
+
+query RelatedBlogs($relatedBlogsIdentifier: String!, $author: String!) {
+  relatedBlogs(identifier: $relatedBlogsIdentifier, author: $author) {
+    identifier
+    createdAt
+    slug
+    title
+    desc
+    imageUrn
+    tagNames
+    author
+  }
+}
+
+query SearchBlog($keyword: String!) {
+  searchBlog(keyword: $keyword) {
+    identifier
+    title
+    desc
+  }
+}
+
+query GetBlogComments($getBlogCommentsIdentifier: String!) {
+  getBlogComments(identifier: $getBlogCommentsIdentifier) {
+    identifier
+    content
+    username
+    createdAt
+    updatedAt
+    blog_identifier
+    blog {
+      identifier
+      createdAt
+      slug
+      title
+      desc
+    }
+  }
+}

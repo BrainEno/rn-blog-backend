@@ -10,30 +10,67 @@ import { MyContext } from '../types/MyContext';
 export class LikeResolver {
   @UseMiddleware(isAuth)
   @Mutation(() => Like)
-  async ToggleLike(
+  async AddLike(@Ctx() { payload }: MyContext, @Arg('blogId') blogId: number) {
+    const user = await User.findOneBy({ id: payload!.userId });
+
+    if (!user) throw new AuthenticationError('认证失败,无法收藏文章');
+
+    try {
+      const blog = await Blog.findOneBy({ id: blogId });
+      if (!blog) throw new Error('无法找到该文章，请重试');
+
+      const like = await Like.findOneBy({ likedBy: user.username, blogId });
+
+      if (!like) {
+        const newLike = Like.create({
+          isLiked: 1,
+          user,
+          blog,
+          blogId
+        });
+
+        blog.likes ? blog.likes.push(newLike) : (blog.likes = [newLike]);
+        await newLike.save();
+
+        user.likedBlogs.push(blog);
+        await user.save();
+
+        blog.setlikedBy(user);
+        await blog.save();
+        return newLike;
+      } else {
+        like.isLiked = 1;
+        await like.save();
+        return like;
+      }
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  @UseMiddleware(isAuth)
+  @Mutation(() => Like)
+  async RemoveLike(
     @Ctx() { payload }: MyContext,
-    @Arg('isLiked') isLiked: number,
     @Arg('blogId') blogId: number
-  ) {
-    const user = await User.findOne({ id: payload!.userId });
+  ): Promise<Like | null> {
+    const user = await User.findOneBy({ id: payload!.userId });
 
     if (!user) throw new AuthenticationError('认证失败');
 
     try {
-      let newLike;
-      const like = await Like.findOne({ username: user.username });
-      //if areadly be liked,cancel the like
-      if (like && like.isLiked !== 0) like.isLiked = 0;
+      const blog = await Blog.findOneBy({ id: blogId });
+      if (!blog) throw new Error('无法找到该文章，请重试');
+
+      const like = await Like.findOneBy({ likedBy: user.username, blogId });
+
       if (!like) {
-        const blog = await Blog.findOneOrFail({ id: blogId });
-        if (!blog) throw new Error('无法找到该文章，请重试');
-        newLike = new Like({
-          isLiked,
-          user,
-          blog
-        });
-        await newLike.save();
-        return newLike;
+        throw new Error('您未收藏该文章');
+      } else {
+        like.isLiked = 0;
+        await like.save();
+        return like;
       }
     } catch (err) {
       console.log(err);

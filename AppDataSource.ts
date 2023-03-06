@@ -1,12 +1,13 @@
-/*eslint-disable*/
-require('dotenv').config();
+import { DataSource, DataSourceOptions } from 'typeorm';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const rootDir = process.env.NODE_ENV === 'development' ? 'src' : 'build';
 
-const port = parseInt(process.env.DB_PORT);
-
-module.exports =
-  process.env.NODE_ENV === 'development'
+const port = parseInt(process.env.DB_PORT!, 10);
+const options: DataSourceOptions =
+  process.env.NODE_ENV === 'development' && !process.env.DATABASE_URL
     ? {
         name: 'default',
         type: 'postgres',
@@ -20,29 +21,20 @@ module.exports =
         entities: [rootDir + '/entities/**/*{.ts,.js}'],
         migrations: [rootDir + '/migrations/**/*{.ts,.js}'],
         subscribers: [rootDir + '/subscribers/**/*{.ts,.js}'],
-        seeds: [rootDir + '/seeds/**/*{.ts,.js}'],
-        cli: {
-          entitiesDir: rootDir + '/entities',
-          migrationsDir: rootDir + '/migrations',
-          subscribersDir: rootDir + '/subscribers'
-        }
+        ssl: false
       }
     : {
         name: 'default',
         type: 'postgres',
         url: process.env.DATABASE_URL,
-        synchronize: true,
+        synchronize: false,
         logging: false,
         entities: [rootDir + '/entities/**/*{.ts,.js}'],
         migrations: [rootDir + '/migrations/**/*{.ts,.js}'],
         subscribers: [rootDir + '/subscribers/**/*{.ts,.js}'],
-        seeds: [rootDir + '/seeds/**/*{.ts,.js}'],
         extra: {
           ssl: { rejectUnauthorized: false }
-        },
-        cli: {
-          entitiesDir: rootDir + '/entities',
-          migrationsDir: rootDir + '/migrations',
-          subscribersDir: rootDir + '/subscriber'
         }
       };
+
+export const AppDataSource: DataSource = new DataSource(options);

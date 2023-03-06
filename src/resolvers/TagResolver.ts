@@ -9,18 +9,23 @@ import {
   Resolver,
   UseMiddleware
 } from 'type-graphql';
-import { getRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import Tag from '../entities/Tag';
 import User from '../entities/User';
+import { AppDataSource } from '../../AppDataSource';
 
 @Resolver()
 export class TagResolver {
+  tagRepository: Repository<Tag>;
+  constructor() {
+    this.tagRepository = AppDataSource.getRepository(Tag);
+  }
   //新建标签
   @UseMiddleware(isAuth)
   @Mutation(() => Tag)
   async createTag(@Arg('name') name: string, @Ctx() { payload }: MyContext) {
-    const user = await User.findOne({ id: payload!.userId });
+    const user = await User.findOneByOrFail({ id: payload!.userId });
 
     if (!user) throw new AuthenticationError('认证失败');
 
@@ -28,7 +33,7 @@ export class TagResolver {
       const errors: any = {};
       if (isEmpty(name)) errors.name = '标签名不得为空';
 
-      const isTag = await getRepository(Tag)
+      const isTag = await this.tagRepository
         .createQueryBuilder('tag')
         .where('lower(tag.name)=:name', { name: name.toLowerCase() })
         .getOne();
@@ -43,7 +48,7 @@ export class TagResolver {
     }
 
     try {
-      const tag = new Tag({ name });
+      const tag = Tag.create({ name });
       await tag.save();
       return tag;
     } catch (err) {
@@ -69,7 +74,7 @@ export class TagResolver {
   async getTagByName(@Arg('name') name: string) {
     if (isEmpty(name)) throw new UserInputError('类名不得为空');
     try {
-      const tag = await Tag.findOne({ name });
+      const tag = await Tag.findOneByOrFail({ name });
       return tag;
     } catch (err) {
       console.log(err);
@@ -81,13 +86,13 @@ export class TagResolver {
   @UseMiddleware(isAuth)
   @Mutation(() => Tag)
   async deleteTag(@Ctx() { payload }: MyContext, @Arg('name') name: string) {
-    const user = await User.findOneOrFail({ id: payload!.userId });
+    const user = await User.findOneByOrFail({ id: payload!.userId });
     if (!user) throw new AuthenticationError('认证失败');
     try {
       const errors: any = {};
       if (isEmpty(name)) errors.name = '请输入要删除的标签名';
 
-      const tagToDel = await Tag.findOneOrFail(name);
+      const tagToDel = await this.tagRepository.findOneByOrFail({ name });
 
       if (!tagToDel) errors.name = '您要删除的标签不存在，请重新输入';
 

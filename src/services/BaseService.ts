@@ -1,4 +1,5 @@
-import { EntityTarget, getRepository, Repository } from 'typeorm';
+import { EntityTarget, Repository } from 'typeorm';
+import { AppDataSource } from '../../AppDataSource';
 
 export default function createBaseService<T>(
   entity: EntityTarget<T>,
@@ -8,12 +9,14 @@ export default function createBaseService<T>(
     entityStr: string;
     repository: Repository<T>;
     constructor() {
-      this.repository = getRepository<T>(entity);
+      this.repository = AppDataSource.getRepository<T>(entity);
     }
 
     async listAll() {
       return await this.repository.createQueryBuilder(entityStr).getMany();
     }
+
+
   }
 
   return BaseService;

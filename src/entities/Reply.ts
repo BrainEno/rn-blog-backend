@@ -19,11 +19,6 @@ import Comment from './Comment';
 @ObjectType()
 @TOEntity('comments')
 export default class Reply extends Entity {
-  constructor(reply: Partial<Reply>) {
-    super();
-    Object.assign(this, reply);
-  }
-
   @Field()
   @Index()
   @Column('varchar', { unique: true })

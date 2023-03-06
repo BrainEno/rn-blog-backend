@@ -6,6 +6,7 @@ import User from './entities/User';
 import fs from 'fs';
 import Blog from './entities/Blog';
 import Category from './entities/Category';
+import { AppDataSource } from '../AppDataSource';
 
 const imageTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
 
@@ -27,7 +28,7 @@ export const upload = multer({
 });
 
 export const uploadAvatar = async (req: Request, res: Response) => {
-  const user = await User.findOneOrFail({ username: req.body.username });
+  const user = await User.findOneByOrFail({ username: req.body.username });
   if (!user) throw new Error('验证失败');
   try {
     const type = req.body.type;
@@ -54,7 +55,7 @@ export const uploadAvatar = async (req: Request, res: Response) => {
 };
 
 export const uploadPicture = async (req: Request, res: Response) => {
-  const user = await User.findOneOrFail({ username: req.body.username });
+  const user = await User.findOneByOrFail({ username: req.body.username });
   if (!user) throw new Error('验证失败');
   try {
     const type = req.body.type;
@@ -65,7 +66,7 @@ export const uploadPicture = async (req: Request, res: Response) => {
 
     let oldImageUrn = '';
     if (type === 'image') {
-      const blog = await Blog.findOneOrFail({
+      const blog = await Blog.findOneByOrFail({
         identifier: req.body.identifier
       });
       if (!blog) throw new Error('无法上传文章配图');
@@ -77,7 +78,9 @@ export const uploadPicture = async (req: Request, res: Response) => {
       }
       return res.json(blog);
     } else if (type === 'banner') {
-      const cat = await Category.findOneOrFail({ name: req.body.catName });
+      const cat = await AppDataSource.getRepository(Category).findOneByOrFail({
+        name: req.body.catName
+      });
       if (!cat) throw new Error('无法上传封面图');
       oldImageUrn = cat.bannerUrn || '';
       cat.bannerUrn = req.file!.filename;

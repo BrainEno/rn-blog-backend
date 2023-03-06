@@ -1,9 +1,12 @@
 FROM node:16
 
-WORKDIR /usr/src/rn-blog-backend
+RUN mkdir /app
+WORKDIR /app
 
-COPY package*.json ./
+COPY package*.json /app
+COPY .env /app
 
+RUN node -v
 RUN npm install
 
 COPY . .
